@@ -1320,6 +1320,9 @@ export function fitFrameToContent(editor: Editor, id: TLShapeId, opts?: {
 export function FitFrameToContentMenuItem(): JSX_2.Element | null;
 
 // @public (undocumented)
+export function flattenShapesToImages(editor: Editor, shapeIds: TLShapeId[], flattenImageBoundsExpand?: number): Promise<TLShapeId[] | undefined>;
+
+// @public (undocumented)
 export const FONT_FAMILIES: Record<TLDefaultFontStyle, string>;
 
 // @public (undocumented)
@@ -1455,7 +1458,7 @@ export class GeoShapeUtil extends BaseBoxShapeUtil<TLGeoShape> {
             dash: "dashed" | "dotted" | "draw" | "solid";
             fill: "fill" | "none" | "pattern" | "semi" | "solid";
             font: "draw" | "mono" | "sans" | "serif";
-            geo: "arrow-down" | "arrow-left" | "arrow-right" | "arrow-up" | "check-box" | "cloud" | "diamond" | "ellipse" | "heart" | "hexagon" | "octagon" | "oval" | "pentagon" | "rectangle" | "rhombus-2" | "rhombus" | "star" | "trapezoid" | "triangle" | "x-box";
+            geo: "arrow-down" | "arrow-left" | "arrow-right" | "arrow-up" | "check-box" | "cloud" | "diamond" | "ellipse" | "heart" | "hexagon" | "octagon" | "oval" | "pentagon" | "rectangle" | "rhombus-2" | "rhombus" | "star" | "trapezoid-bottom" | "trapezoid-top" | "trapezoid" | "triangle" | "x-box";
             growY: number;
             h: number;
             labelColor: "black" | "blue" | "green" | "grey" | "light-blue" | "light-green" | "light-red" | "light-violet" | "orange" | "red" | "violet" | "white" | "yellow";
@@ -1489,7 +1492,7 @@ export class GeoShapeUtil extends BaseBoxShapeUtil<TLGeoShape> {
             dash: "dashed" | "dotted" | "draw" | "solid";
             fill: "fill" | "none" | "pattern" | "semi" | "solid";
             font: "draw" | "mono" | "sans" | "serif";
-            geo: "arrow-down" | "arrow-left" | "arrow-right" | "arrow-up" | "check-box" | "cloud" | "diamond" | "ellipse" | "heart" | "hexagon" | "octagon" | "oval" | "pentagon" | "rectangle" | "rhombus-2" | "rhombus" | "star" | "trapezoid" | "triangle" | "x-box";
+            geo: "arrow-down" | "arrow-left" | "arrow-right" | "arrow-up" | "check-box" | "cloud" | "diamond" | "ellipse" | "heart" | "hexagon" | "octagon" | "oval" | "pentagon" | "rectangle" | "rhombus-2" | "rhombus" | "star" | "trapezoid-bottom" | "trapezoid-top" | "trapezoid" | "triangle" | "x-box";
             growY: number;
             h: number;
             labelColor: "black" | "blue" | "green" | "grey" | "light-blue" | "light-green" | "light-red" | "light-violet" | "orange" | "red" | "violet" | "white" | "yellow";
@@ -1595,14 +1598,26 @@ export function getDefaultCrop(): {
     };
 };
 
+// @public (undocumented)
+export function getDrawLinePathData(id: string, outline: VecLike[], strokeWidth: number): string[];
+
 // @public
 export function getEmbedInfo(definitions: readonly TLEmbedDefinition[], inputUrl: string): TLEmbedResult;
+
+// @public (undocumented)
+export function getGeometryForLineShape(shape: TLLineShape): CubicSpline2d | Polyline2d;
+
+// @public (undocumented)
+export function getLineDrawPath(shape: TLLineShape, spline: CubicSpline2d | Polyline2d, strokeWidth: number): string;
 
 // @public (undocumented)
 export function getMediaAssetInfoPartial(file: File, assetId: TLAssetId, isImageType: boolean, isVideoType: boolean, maxImageDimension?: number): Promise<TLImageAsset | TLVideoAsset>;
 
 // @public (undocumented)
 export function getOccludedChildren(editor: Editor, parent: TLShape): TLShapeId[];
+
+// @public
+export function getStrokeOutlinePoints(strokePoints: StrokePoint[], options?: StrokeOptions): Vec[];
 
 // @public
 export function getUncroppedSize(shapeSize: {
@@ -1871,6 +1886,48 @@ export class LineShapeUtil extends ShapeUtil<TLLineShape> {
 
 // @public (undocumented)
 export function LineToolbarItem(): JSX_2.Element;
+
+// @public (undocumented)
+export class LineToolIdle extends StateNode {
+    // (undocumented)
+    static id: string;
+    // (undocumented)
+    onCancel(): void;
+    // (undocumented)
+    onEnter(info: {
+        shapeId: TLShapeId;
+    }): void;
+    // (undocumented)
+    onPointerDown(): void;
+}
+
+// @public (undocumented)
+export class LineToolPointing extends StateNode {
+    // (undocumented)
+    cancel(): void;
+    // (undocumented)
+    complete(): void;
+    // (undocumented)
+    static id: string;
+    // (undocumented)
+    markId: string | undefined;
+    // (undocumented)
+    onCancel(): void;
+    // (undocumented)
+    onComplete(): void;
+    // (undocumented)
+    onEnter(info: {
+        shapeId?: TLShapeId;
+    }): void;
+    // (undocumented)
+    onInterrupt(): void;
+    // (undocumented)
+    onPointerMove(): void;
+    // (undocumented)
+    onPointerUp(): void;
+    // (undocumented)
+    shape: TLLineShape;
+}
 
 // @public (undocumented)
 export function MiscMenuGroup(): JSX_2.Element;
@@ -2328,6 +2385,46 @@ export function StarToolbarItem(): JSX_2.Element;
 // @public (undocumented)
 export const STROKE_SIZES: Record<TLDefaultSizeStyle, number>;
 
+// @public
+export interface StrokeOptions {
+    easing?(pressure: number): number;
+    end?: {
+        cap?: boolean;
+        easing?(distance: number): number;
+        taper?: boolean | number;
+    };
+    last?: boolean;
+    simulatePressure?: boolean;
+    size?: number;
+    smoothing?: number;
+    start?: {
+        cap?: boolean;
+        easing?(distance: number): number;
+        taper?: boolean | number;
+    };
+    // (undocumented)
+    streamline?: number;
+    thinning?: number;
+}
+
+// @public
+export interface StrokePoint {
+    // (undocumented)
+    distance: number;
+    // (undocumented)
+    input: Vec;
+    // (undocumented)
+    point: Vec;
+    // (undocumented)
+    pressure: number;
+    // (undocumented)
+    radius: number;
+    // (undocumented)
+    runningLength: number;
+    // (undocumented)
+    vector: Vec;
+}
+
 // @public (undocumented)
 export interface StylePickerSetProps {
     // (undocumented)
@@ -2339,6 +2436,20 @@ export type StyleValuesForUi<T> = readonly {
     readonly icon: string;
     readonly value: T;
 }[];
+
+// @public (undocumented)
+export function SvgTextLabel({ fontSize, font, align, verticalAlign, text, labelColor, bounds, padding, stroke, }: {
+    align: TLDefaultHorizontalAlignStyle;
+    bounds: Box;
+    font: TLDefaultFontStyle;
+    fontSize: number;
+    labelColor: string;
+    padding?: number;
+    stroke?: boolean;
+    text: string;
+    verticalAlign: TLDefaultVerticalAlignStyle;
+    wrap?: boolean;
+}): JSX_2.Element;
 
 // @public (undocumented)
 export const TEXT_PROPS: {

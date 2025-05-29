@@ -11,6 +11,9 @@ import { TEXT_PROPS } from './default-shape-constants'
 import { getLegacyOffsetX } from './legacyProps'
 import { useDefaultColorTheme } from './useDefaultColorTheme'
 
+/**
+ * @public
+ */
 export function SvgTextLabel({
 	fontSize,
 	font,

@@ -221,6 +221,7 @@ export class GeoShapeUtil extends BaseBoxShapeUtil<TLGeoShape> {
 				})
 				break
 			}
+			case 'trapezoid-top':
 			case 'trapezoid': {
 				const offset = Math.min(w * 0.38, h * 0.38)
 				body = new Polygon2d({
@@ -229,6 +230,14 @@ export class GeoShapeUtil extends BaseBoxShapeUtil<TLGeoShape> {
 				})
 				break
 			}
+			case 'trapezoid-bottom':
+				const offset = Math.min(w * 0.38, h * 0.38)
+				body = new Polygon2d({
+					points: [new Vec(0, 0), new Vec(w , 0), new Vec(w - offset, h), new Vec(offset, h)],
+					isFilled,
+				})
+				break
+
 			case 'arrow-right': {
 				const ox = Math.min(w, h) * 0.38
 				const oy = h * 0.16
@@ -399,6 +408,8 @@ export class GeoShapeUtil extends BaseBoxShapeUtil<TLGeoShape> {
 			case 'rhombus-2':
 			case 'star':
 			case 'trapezoid':
+			case 'trapezoid-top':
+			case 'trapezoid-bottom':
 			case 'triangle':
 			case 'x-box':
 				// poly-line type shapes hand snap points for each vertex & the center

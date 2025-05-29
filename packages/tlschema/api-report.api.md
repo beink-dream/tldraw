@@ -304,7 +304,7 @@ export const frameShapeMigrations: TLPropsMigrations;
 export const frameShapeProps: RecordProps<TLFrameShape>;
 
 // @public (undocumented)
-export const GeoShapeGeoStyle: EnumStyleProp<"arrow-down" | "arrow-left" | "arrow-right" | "arrow-up" | "check-box" | "cloud" | "diamond" | "ellipse" | "heart" | "hexagon" | "octagon" | "oval" | "pentagon" | "rectangle" | "rhombus-2" | "rhombus" | "star" | "trapezoid" | "triangle" | "x-box">;
+export const GeoShapeGeoStyle: EnumStyleProp<"arrow-down" | "arrow-left" | "arrow-right" | "arrow-up" | "check-box" | "cloud" | "diamond" | "ellipse" | "heart" | "hexagon" | "octagon" | "oval" | "pentagon" | "rectangle" | "rhombus-2" | "rhombus" | "star" | "trapezoid-bottom" | "trapezoid-top" | "trapezoid" | "triangle" | "x-box">;
 
 // @public (undocumented)
 export const geoShapeMigrations: TLPropsMigrations;

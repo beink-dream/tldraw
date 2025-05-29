@@ -38,6 +38,12 @@ function getLineDrawStrokeOutlinePoints(
 	)
 }
 
+/**
+ * @public
+ * @param shape -
+ * @param spline -
+ * @param strokeWidth -
+ */
 export function getLineDrawPath(
 	shape: TLLineShape,
 	spline: CubicSpline2d | Polyline2d,

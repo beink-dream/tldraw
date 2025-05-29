@@ -39,6 +39,8 @@ export const GeoShapeGeoStyle = StyleProp.defineEnum('tldraw:geo', {
 		'rhombus-2',
 		'oval',
 		'trapezoid',
+		'trapezoid-bottom',
+		'trapezoid-top',
 		'arrow-right',
 		'arrow-left',
 		'arrow-up',

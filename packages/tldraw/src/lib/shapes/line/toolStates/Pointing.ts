@@ -14,6 +14,9 @@ import {
 
 const MINIMUM_DISTANCE_BETWEEN_SHIFT_CLICKED_HANDLES = 2
 
+/**
+ * @public
+ */
 export class Pointing extends StateNode {
 	static override id = 'pointing'
 

@@ -1,5 +1,8 @@
 import { StateNode, TLShapeId } from '@tldraw/editor'
 
+/**
+ * @public
+ */
 export class Idle extends StateNode {
 	static override id = 'idle'
 

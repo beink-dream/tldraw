@@ -625,8 +625,42 @@ export {
 	type TldrawFileParseError,
 } from './lib/utils/tldr/file'
 
+// Patches
+import { SvgTextLabel } from './lib/shapes/shared/SvgTextLabel';
+
+//LineTool
+import { getDrawLinePathData } from "./lib/shapes/line/line-helpers";
+import { getLineDrawPath } from "./lib/shapes/line/components/getLinePath";
+import { Pointing as LineToolPointing } from "./lib/shapes/line/toolStates/Pointing";
+import { Idle as LineToolIdle } from "./lib/shapes/line/toolStates/Idle";
+import { getGeometryForLineShape } from "./lib/shapes/line/LineShapeUtil";
+
+import { getStrokeOutlinePoints } from "./lib/shapes/shared/freehand/getStrokeOutlinePoints";
+
+import type { StrokePoint, StrokeOptions} from './lib/shapes/shared/freehand/types'
+
+///EraserTool
+import { flattenShapesToImages } from "./lib/ui/hooks/useFlatten";
+
+export {
+	SvgTextLabel,
+	getDrawLinePathData,
+	getLineDrawPath,
+	LineToolPointing,
+	LineToolIdle,
+	getGeometryForLineShape,
+	getStrokeOutlinePoints,
+	flattenShapesToImages,
+}
+
+export type {
+	StrokePoint,
+	StrokeOptions
+}
+
 registerTldrawLibraryVersion(
 	(globalThis as any).TLDRAW_LIBRARY_NAME,
 	(globalThis as any).TLDRAW_LIBRARY_VERSION,
 	(globalThis as any).TLDRAW_LIBRARY_MODULES
 )
+

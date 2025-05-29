@@ -15,6 +15,9 @@ import {
 } from '@tldraw/editor'
 import { useCallback } from 'react'
 
+/**
+ * @public
+ */
 export async function flattenShapesToImages(
 	editor: Editor,
 	shapeIds: TLShapeId[],
