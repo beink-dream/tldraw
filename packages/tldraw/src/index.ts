@@ -1,6 +1,25 @@
 /// <reference types="react" />
 
 import { registerTldrawLibraryVersion } from '@tldraw/editor'
+export {
+	PathBuilder,
+	PathBuilderGeometry2d,
+	type BasePathBuilderOpts,
+	type CubicBezierToPathBuilderCommand,
+	type DashedPathBuilderOpts,
+	type DrawPathBuilderDOpts,
+	type DrawPathBuilderOpts,
+	type LineToPathBuilderCommand,
+	type MoveToPathBuilderCommand,
+	type PathBuilderCommand,
+	type PathBuilderCommandBase,
+	type PathBuilderCommandInfo,
+	type PathBuilderCommandOpts,
+	type PathBuilderLineOpts,
+	type PathBuilderOpts,
+	type PathBuilderToDOpts,
+	type SolidPathBuilderOpts,
+} from './lib/shapes/shared/PathBuilder'
 export { usePrefersReducedMotion } from './lib/shapes/shared/usePrefersReducedMotion'
 export { DefaultA11yAnnouncer, useSelectedShapesAnnouncer } from './lib/ui/components/A11y'
 export { ColorSchemeMenu } from './lib/ui/components/ColorSchemeMenu'
@@ -629,12 +648,8 @@ export {
 import { SvgTextLabel } from './lib/shapes/shared/SvgTextLabel';
 
 //LineTool
-import { getDrawLinePathData } from "./lib/shapes/line/line-helpers";
-import { getLineDrawPath } from "./lib/shapes/line/components/getLinePath";
 import { Pointing as LineToolPointing } from "./lib/shapes/line/toolStates/Pointing";
 import { Idle as LineToolIdle } from "./lib/shapes/line/toolStates/Idle";
-import { getGeometryForLineShape } from "./lib/shapes/line/LineShapeUtil";
-
 import { getStrokeOutlinePoints } from "./lib/shapes/shared/freehand/getStrokeOutlinePoints";
 
 import type { StrokePoint, StrokeOptions} from './lib/shapes/shared/freehand/types'
@@ -644,11 +659,8 @@ import { flattenShapesToImages } from "./lib/ui/hooks/useFlatten";
 
 export {
 	SvgTextLabel,
-	getDrawLinePathData,
-	getLineDrawPath,
 	LineToolPointing,
 	LineToolIdle,
-	getGeometryForLineShape,
 	getStrokeOutlinePoints,
 	flattenShapesToImages,
 }
