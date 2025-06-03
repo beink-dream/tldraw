@@ -1668,6 +1668,9 @@ export function getDefaultCrop(): {
 export function getEmbedInfo(definitions: readonly TLEmbedDefinition[], inputUrl: string): TLEmbedResult;
 
 // @public (undocumented)
+export function getGeoShapePath(shape: TLGeoShape): PathBuilder;
+
+// @public (undocumented)
 export function getMediaAssetInfoPartial(file: File, assetId: TLAssetId, isImageType: boolean, isVideoType: boolean, maxImageDimension?: number): Promise<TLImageAsset | TLVideoAsset>;
 
 // @public (undocumented)

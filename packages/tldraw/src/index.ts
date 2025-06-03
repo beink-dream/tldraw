@@ -665,6 +665,8 @@ export {
 	flattenShapesToImages,
 }
 
+export { getGeoShapePath } from './lib/shapes/geo/getGeoShapePath';
+
 export type {
 	StrokePoint,
 	StrokeOptions

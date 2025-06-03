@@ -19,6 +19,10 @@ import { STROKE_SIZES } from '../arrow/shared'
 import { PathBuilder } from '../shared/PathBuilder'
 
 const pathCache = new WeakCache<TLGeoShape, PathBuilder>()
+
+/**
+ * @public
+ */
 export function getGeoShapePath(shape: TLGeoShape) {
 	return pathCache.get(shape, _getGeoPath)
 }
