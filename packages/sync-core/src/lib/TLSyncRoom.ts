@@ -1095,6 +1095,19 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 				}
 			}
 
+			// PATCH TO ALLOW VIEWER TO COMMENT
+			if (message.diff && session?.isReadonly) {
+				// we only allow patching for viewer
+				for (const [id, op] of Object.entries(message.diff!)) {
+					if (op[0] === RecordOpType.Patch) {
+						const res = patchDocument(docChanges, id, op[1])
+						// if res.ok is false here then we already called `fail` and we should stop immediately
+						if (!res.ok) return
+						break
+					}
+				}
+			}
+
 			// Let the client know what action to take based on the results of the push
 			if (
 				// if there was only a presence push, the client doesn't need to do anything aside from

@@ -4501,6 +4501,7 @@ export class Editor extends EventEmitter<TLEventMap> {
 	 * @public
 	 */
 	updateAssets(assets: TLAssetPartial[]): this {
+
 		if (this.getIsReadonly()) return this
 		if (assets.length <= 0) return this
 		this.run(
@@ -8309,7 +8310,8 @@ export class Editor extends EventEmitter<TLEventMap> {
 
 	/** @internal */
 	_updateShapes(_partials: (TLShapePartial | null | undefined)[]) {
-		if (this.getIsReadonly()) return
+		// PATCH FOR COMMENT SYNC
+		// if (this.getIsReadonly()) return
 
 		this.run(() => {
 			const updates = []
