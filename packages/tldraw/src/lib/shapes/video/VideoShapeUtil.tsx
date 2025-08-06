@@ -174,6 +174,7 @@ const VideoShape = memo(function VideoShape({ shape }: { shape: TLVideoShape }) 
 									controls={isEditing && showControls}
 									onLoadedData={handleLoadedData}
 									hidden={!isLoaded}
+									crossOrigin={"use-credentials"}
 								>
 									<source src={url} />
 								</video>
