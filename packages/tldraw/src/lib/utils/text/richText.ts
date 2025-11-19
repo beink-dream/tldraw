@@ -94,6 +94,13 @@ export function renderHtmlFromRichTextForMeasurement(editor: Editor, richText: T
 // A weak cache used to store plaintext that's been extracted from rich text.
 const plainTextFromRichTextCache = new WeakCache<TLRichText, string>()
 
+/**
+ * Check if the rich text is empty.
+ * @param richText - The rich text content.
+ *
+ *
+ * @public
+ */
 export function isEmptyRichText(richText: TLRichText) {
 	if (richText.content.length === 1) {
 		if (!(richText.content[0] as any).content) return true

@@ -1820,6 +1820,9 @@ export class ImageShapeUtil extends BaseBoxShapeUtil<TLImageShape> {
     static type: "image";
 }
 
+// @public
+export function isEmptyRichText(richText: TLRichText): boolean;
+
 // @public (undocumented)
 export const KeyboardShiftEnterTweakExtension: Extension<any, any>;
 

@@ -590,6 +590,7 @@ export {
 export {
 	KeyboardShiftEnterTweakExtension,
 	defaultAddFontsFromNode,
+	isEmptyRichText,
 	renderHtmlFromRichText,
 	renderHtmlFromRichTextForMeasurement,
 	renderPlaintextFromRichText,
