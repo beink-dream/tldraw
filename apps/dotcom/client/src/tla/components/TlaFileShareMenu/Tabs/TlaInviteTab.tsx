@@ -46,7 +46,7 @@ export function TlaInviteTab({ fileId }: { fileId: string }) {
 				{isOwner && (
 					<TlaMenuControlGroup>
 						<TlaSharedToggle isShared={isShared} fileId={fileId} />
-						<TlaSelectSharedLinkType isShared={isShared} fileId={fileId} />
+						{isShared && <TlaSelectSharedLinkType fileId={fileId} />}
 					</TlaMenuControlGroup>
 				)}
 				{isShared && <TlaCopyLinkButton isShared={isShared} fileId={fileId} />}
@@ -76,7 +76,9 @@ function TlaSharedToggle({ isShared, fileId }: { isShared: boolean; fileId: stri
 				<F defaultMessage="Share this file" />
 			</TlaMenuControlLabel>
 			<TlaMenuControlInfoTooltip
-				onClick={() => trackEvent('open-url', { url: learnMoreUrl, source: 'file-share-menu' })}
+				onClick={() =>
+					trackEvent('open-url', { destinationUrl: learnMoreUrl, source: 'file-share-menu' })
+				}
 				href={learnMoreUrl}
 			>
 				<F defaultMessage="Learn more about sharing." />
@@ -90,7 +92,7 @@ function TlaSharedToggle({ isShared, fileId }: { isShared: boolean; fileId: stri
 	)
 }
 
-function TlaSelectSharedLinkType({ isShared, fileId }: { isShared: boolean; fileId: string }) {
+function TlaSelectSharedLinkType({ fileId }: { fileId: string }) {
 	const app = useApp()
 	const user = useTldrawUser()
 	const trackEvent = useTldrawAppUiEvents()
@@ -112,9 +114,7 @@ function TlaSelectSharedLinkType({ isShared, fileId }: { isShared: boolean; file
 		[app, fileId, trackEvent]
 	)
 
-	const label = useMsg(
-		isShared ? (sharedLinkType === 'edit' ? messages.editor : messages.viewer) : messages.noAccess
-	)
+	const label = useMsg(sharedLinkType === 'edit' ? messages.editor : messages.viewer)
 
 	return (
 		<TlaMenuControl>
@@ -124,13 +124,11 @@ function TlaSelectSharedLinkType({ isShared, fileId }: { isShared: boolean; file
 			<TlaMenuSelect
 				data-testid="shared-link-type-select"
 				label={label}
-				value={!isShared ? 'no-access' : sharedLinkType!}
-				disabled={!isShared}
+				value={sharedLinkType!}
 				onChange={handleSelectChange}
 				options={[
 					{ value: 'edit', label: <F defaultMessage="Editor" /> },
 					{ value: 'view', label: <F defaultMessage="Viewer" /> },
-					// { value: 'no-access', label: <F defaultMessage="No access" /> },
 				]}
 			/>
 		</TlaMenuControl>

@@ -1385,6 +1385,7 @@ describe('Add rich text', () => {
 		['text shape', getTestMigration(textShapeVersions.AddRichText)],
 		['geo shape', getTestMigration(geoShapeVersions.AddRichText)],
 		['note shape', getTestMigration(noteShapeVersions.AddRichText)],
+		['arrow shape', getTestMigration(arrowShapeVersions.AddRichText)],
 	] as const
 
 	for (const [shapeName, { up }] of migrations) {
@@ -2185,6 +2186,15 @@ describe('Add side to arrow binding', () => {
 	test('down works as expected', () => {
 		expect(down({ props: { snap: 'none' } })).toEqual({ props: {} })
 		expect(down({ props: { snap: 'edge' } })).toEqual({ props: {} })
+	})
+})
+
+describe('TLVideoAsset AddAutoplay', () => {
+	const { up, down } = getTestMigration(videoShapeVersions.AddAutoplay)
+
+	test('down works as expected', () => {
+		expect(up({ props: {} })).toEqual({ props: { autoplay: true } })
+		expect(down({ props: { autoplay: true } })).toEqual({ props: {} })
 	})
 })
 

@@ -20,6 +20,9 @@
   "08331c1710": {
     "translation": "Se ha superado el límite, inténtelo de nuevo más tarde."
   },
+  "08bd40c754": {
+    "translation": "Cuenta"
+  },
   "0b27918290": {
     "translation": "Archivo"
   },
@@ -44,11 +47,20 @@
   "1dd1c5fb7f": {
     "translation": "Hoy"
   },
+  "20976e7bec": {
+    "translation": "La habitación está llena"
+  },
+  "21bfb2dc2e": {
+    "translation": "Esta sala está llegando a su límite de tamaño. Considere eliminar contenido o crear un nuevo archivo."
+  },
   "250ddea65c": {
     "translation": "Acerca de tldraw"
   },
   "299cb00a7a": {
     "translation": "Error al cargar"
+  },
+  "2deec2cb74": {
+    "translation": "Esta sala ha alcanzado su límite de tamaño y es posible que los cambios ya no se guarden. Elimina contenido o crea un nuevo archivo."
   },
   "31246941ad": {
     "translation": "Tiene que iniciar sesión para ver este archivo."
@@ -119,6 +131,15 @@
   "5a95a425f7": {
     "translation": "Compartir"
   },
+  "5bb6cf3b53": {
+    "translation": "La habitación se está haciendo grande"
+  },
+  "5bcc12ace8": {
+    "translation": "Esta sala ahora es de solo lectura."
+  },
+  "5bec508475": {
+    "translation": "Se detectó un navegador antiguo. Actualice su navegador para usar esta aplicación."
+  },
   "5d26ae7550": {
     "translation": "No hemos podido subir parte del contenido que creó antes de iniciar sesión."
   },
@@ -179,11 +200,17 @@
   "777f9e90cf": {
     "translation": "Solicitud no válida."
   },
+  "78e9815992": {
+    "translation": "Entiendo"
+  },
   "797799f35e": {
     "translation": "Enviar un problema en GitHub"
   },
   "7b1329f5ca": {
     "translation": "Manual de usuario"
+  },
+  "7be10fc592": {
+    "translation": "Restaurar versión"
   },
   "7cb5f8b4a5": {
     "translation": "Olvidar"
@@ -209,6 +236,9 @@
   "86c66437fd": {
     "translation": "Cambiar el nombre del archivo"
   },
+  "8b1946f965": {
+    "translation": "Para continuar editando, copie la sala a sus archivos."
+  },
   "8eb2c00e96": {
     "translation": "Compartido con usted"
   },
@@ -232,6 +262,9 @@
   },
   "9bef626805": {
     "translation": "Eliminar archivo"
+  },
+  "9c258b8f88": {
+    "translation": "Esta sala multijugador anónima de tldraw ahora es de solo lectura. Para continuar editando, inicia sesión y cópiala a tus archivos."
   },
   "9ceb927baa": {
     "translation": "Publicar este archivo"
@@ -287,6 +320,9 @@
   },
   "b758336699": {
     "translation": "Copiar enlace"
+  },
+  "ba0318cb81": {
+    "translation": "Inicia sesión para compartir"
   },
   "bb792693e2": {
     "translation": "Desanclar"

@@ -9,23 +9,26 @@ import {
 	TLEmbedShape,
 	TLFrameShape,
 	TLGroupShape,
+	TLImageShape,
 	TLShape,
 	TLShapeId,
 	TLShapePartial,
 	TLTextShape,
+	TLVideoShape,
 	Vec,
 	approximately,
 	compact,
 	createShapeId,
+	kickoutOccludedShapes,
 	openWindow,
 	useMaybeEditor,
 } from '@tldraw/editor'
 import * as React from 'react'
-import { kickoutOccludedShapes } from '../../tools/SelectTool/selectHelpers'
 import { fitFrameToContent, removeFrame } from '../../utils/frames/frames'
 import { generateShapeAnnouncementMessage } from '../components/A11y'
 import { EditLinkDialog } from '../components/EditLinkDialog'
 import { EmbedDialog } from '../components/EmbedDialog'
+import { DefaultKeyboardShortcutsDialog } from '../components/KeyboardShortcutsDialog/DefaultKeyboardShortcutsDialog'
 import { useShowCollaborationUi } from '../hooks/useCollaborationStatus'
 import { flattenShapesToImages } from '../hooks/useFlatten'
 import { TLUiTranslationKey } from '../hooks/useTranslation/TLUiTranslationKey'
@@ -33,6 +36,7 @@ import { useTranslation } from '../hooks/useTranslation/useTranslation'
 import { TLUiIconType } from '../icon-types'
 import { TLUiOverrideHelpers, useDefaultHelpers } from '../overrides'
 import { useA11y } from './a11y'
+import { useTldrawUiComponents } from './components'
 import { TLUiEventSource, useUiEvents } from './events'
 
 /** @public */
@@ -40,12 +44,13 @@ export interface TLUiActionItem<
 	TransationKey extends string = string,
 	IconType extends string = string,
 > {
-	icon?: IconType
+	icon?: IconType | React.ReactElement
 	id: string
 	kbd?: string
 	label?: TransationKey | { [key: string]: TransationKey }
 	readonlyOk?: boolean
 	checkbox?: boolean
+	isRequiredA11yAction?: boolean
 	onSelect(source: TLUiEventSource): Promise<void> | void
 }
 
@@ -63,6 +68,17 @@ export interface ActionsProviderProps {
 		helpers: TLUiOverrideHelpers
 	): TLUiActionsContextType
 	children: React.ReactNode
+}
+
+/** @public */
+export function supportsDownloadingOriginal(
+	shape: TLShape,
+	editor: Editor
+): shape is TLImageShape | TLVideoShape {
+	return (
+		(editor.isShapeOfType(shape, 'image') || editor.isShapeOfType(shape, 'video')) &&
+		!!(shape as any).props.assetId
+	)
 }
 
 function makeActions(actions: TLUiActionItem[]) {
@@ -83,6 +99,7 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 	const _editor = useMaybeEditor()
 	const showCollaborationUi = useShowCollaborationUi()
 	const helpers = useDefaultHelpers()
+	const components = useTldrawUiComponents()
 	const trackEvent = useUiEvents()
 	const a11y = useA11y()
 	const msg = useTranslation()
@@ -153,6 +170,17 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 				onSelect(source) {
 					trackEvent('insert-embed', { source })
 					helpers.addDialog({ component: EmbedDialog })
+				},
+			},
+			{
+				id: 'open-kbd-shortcuts',
+				label: 'action.open-kbd-shortcuts',
+				kbd: 'cmd+alt+/,ctrl+alt+/',
+				onSelect(source) {
+					trackEvent('open-kbd-shortcuts', { source })
+					helpers.addDialog({
+						component: components.KeyboardShortcutsDialog ?? DefaultKeyboardShortcutsDialog,
+					})
 				},
 			},
 			{
@@ -395,6 +423,8 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 						}
 
 						editor.markHistoryStoppingPoint('convert shapes to bookmark')
+
+						// Should be able to create the shape since we're about to delete the other other
 						editor.deleteShapes(deleteList)
 						editor.createShapes(createList)
 					})
@@ -1011,17 +1041,20 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 				id: 'rotate-cw',
 				label: 'action.rotate-cw',
 				icon: 'rotate-cw',
+				kbd: 'shift+.,shift+alt+.',
 				onSelect(source) {
 					if (!canApplySelectionAction()) return
 					if (mustGoBackToSelectToolFirst()) return
 
-					trackEvent('rotate-cw', { source })
+					const isFine = editor.inputs.altKey
+					trackEvent('rotate-cw', { source, fine: isFine })
 					editor.markHistoryStoppingPoint('rotate-cw')
 					editor.run(() => {
-						const offset = editor.getSelectionRotation() % (HALF_PI / 2)
-						const dontUseOffset = approximately(offset, 0) || approximately(offset, HALF_PI / 2)
+						const rotation = HALF_PI / (isFine ? 96 : 6)
+						const offset = editor.getSelectionRotation() % rotation
+						const dontUseOffset = approximately(offset, 0) || approximately(offset, rotation)
 						const selectedShapeIds = editor.getSelectedShapeIds()
-						editor.rotateShapesBy(selectedShapeIds, HALF_PI / 2 - (dontUseOffset ? 0 : offset))
+						editor.rotateShapesBy(selectedShapeIds, rotation - (dontUseOffset ? 0 : offset))
 						kickoutOccludedShapes(editor, selectedShapeIds)
 					})
 				},
@@ -1030,17 +1063,21 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 				id: 'rotate-ccw',
 				label: 'action.rotate-ccw',
 				icon: 'rotate-ccw',
+				// omg double comma
+				kbd: 'shift+,,shift+alt+,',
 				onSelect(source) {
 					if (!canApplySelectionAction()) return
 					if (mustGoBackToSelectToolFirst()) return
 
-					trackEvent('rotate-ccw', { source })
+					const isFine = editor.inputs.altKey
+					trackEvent('rotate-ccw', { source, fine: isFine })
 					editor.markHistoryStoppingPoint('rotate-ccw')
 					editor.run(() => {
-						const offset = editor.getSelectionRotation() % (HALF_PI / 2)
+						const rotation = HALF_PI / (isFine ? 96 : 6)
+						const offset = editor.getSelectionRotation() % rotation
 						const offsetCloseToZero = approximately(offset, 0)
 						const selectedShapeIds = editor.getSelectedShapeIds()
-						editor.rotateShapesBy(selectedShapeIds, offsetCloseToZero ? -(HALF_PI / 2) : -offset)
+						editor.rotateShapesBy(selectedShapeIds, offsetCloseToZero ? -rotation : -offset)
 						kickoutOccludedShapes(editor, selectedShapeIds)
 					})
 				},
@@ -1214,6 +1251,36 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 					trackEvent('toggle-reduce-motion', { source })
 					editor.user.updateUserPreferences({
 						animationSpeed: editor.user.getAnimationSpeed() === 0 ? 1 : 0,
+					})
+				},
+				checkbox: true,
+			},
+			{
+				id: 'toggle-keyboard-shortcuts',
+				label: {
+					default: 'action.toggle-keyboard-shortcuts',
+					menu: 'action.toggle-keyboard-shortcuts.menu',
+				},
+				readonlyOk: true,
+				onSelect(source) {
+					trackEvent('toggle-keyboard-shortcuts', { source })
+					editor.user.updateUserPreferences({
+						areKeyboardShortcutsEnabled: !editor.user.getAreKeyboardShortcutsEnabled(),
+					})
+				},
+				checkbox: true,
+			},
+			{
+				id: 'toggle-ui-labels',
+				label: {
+					default: 'action.toggle-ui-labels',
+					menu: 'action.toggle-ui-labels.menu',
+				},
+				readonlyOk: true,
+				onSelect(source) {
+					trackEvent('toggle-ui-labels', { source })
+					editor.user.updateUserPreferences({
+						showUiLabels: !editor.user.getShowUiLabels(),
 					})
 				},
 				checkbox: true,
@@ -1514,6 +1581,7 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 				id: 'adjust-shape-styles',
 				label: 'a11y.adjust-shape-styles',
 				kbd: 'cmd+Enter,ctrl+Enter',
+				isRequiredA11yAction: true,
 				onSelect: async (source) => {
 					if (!canApplySelectionAction()) return
 
@@ -1522,6 +1590,40 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 						.querySelector('.tlui-style-panel button') as HTMLElement | null
 					firstButton?.focus()
 					trackEvent('adjust-shape-styles', { source })
+				},
+			},
+			{
+				id: 'a11y-open-context-menu',
+				kbd: 'cmd+shift+Enter,ctrl+shift+Enter',
+				isRequiredA11yAction: true,
+				readonlyOk: true,
+				onSelect: async (source) => {
+					if (!canApplySelectionAction()) return
+
+					// For multiple shapes or a single shape, get the selection bounds
+					const selectionBounds = editor.getSelectionPageBounds()
+					if (!selectionBounds) return
+
+					// Calculate the center point of the selection
+					const centerX = selectionBounds.x + selectionBounds.width / 2
+					const centerY = selectionBounds.y + selectionBounds.height / 2
+
+					// Convert page coordinates to screen coordinates
+					const screenPoint = editor.pageToScreen(new Vec(centerX, centerY))
+
+					// Dispatch a contextmenu event directly at the center of the selection
+					editor
+						.getContainer()
+						.querySelector('.tl-canvas')
+						?.dispatchEvent(
+							new PointerEvent('contextmenu', {
+								clientX: screenPoint.x,
+								clientY: screenPoint.y,
+								bubbles: true,
+							})
+						)
+
+					trackEvent('open-context-menu', { source })
 				},
 			},
 			{
@@ -1546,6 +1648,7 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 				id: 'a11y-repeat-shape-announce',
 				kbd: 'alt+r',
 				label: 'a11y.repeat-shape',
+				isRequiredA11yAction: true,
 				readonlyOk: true,
 				onSelect: async (source) => {
 					const selectedShapeIds = editor.getSelectedShapeIds()
@@ -1563,6 +1666,66 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 						})
 						trackEvent('a11y-repeat-shape-announce', { source })
 					}
+				},
+			},
+			{
+				id: 'image-replace',
+				label: 'tool.replace-media',
+				icon: 'arrow-cycle',
+				readonlyOk: false,
+				onSelect: async (source) => {
+					trackEvent('image-replace', { source })
+					helpers.replaceImage()
+				},
+			},
+			{
+				id: 'video-replace',
+				label: 'tool.replace-media',
+				icon: 'arrow-cycle',
+				readonlyOk: false,
+				onSelect: async (source) => {
+					trackEvent('video-replace', { source })
+					helpers.replaceVideo()
+				},
+			},
+			{
+				id: 'download-original',
+				label: 'action.download-original',
+				readonlyOk: true,
+				onSelect: async (source) => {
+					const selectedShapes = editor.getSelectedShapes()
+					if (selectedShapes.length === 0) return
+
+					const mediaShapes = selectedShapes.filter((s): s is TLImageShape | TLVideoShape =>
+						supportsDownloadingOriginal(s, editor)
+					)
+
+					if (mediaShapes.length === 0) return
+
+					for (const mediaShape of mediaShapes) {
+						const asset = editor.getAsset(mediaShape.props.assetId!)
+						if (!asset || !asset.props.src) continue
+
+						const url = await editor.resolveAssetUrl(asset.id, { shouldResolveToOriginal: true })
+						if (!url) return
+
+						const link = document.createElement('a')
+						link.href = url
+
+						if (
+							(asset.type === 'video' || asset.type === 'image') &&
+							!asset.props.src.startsWith('asset:')
+						) {
+							link.download = asset.props.name
+						} else {
+							link.download = 'download'
+						}
+						document.body.appendChild(link)
+						link.click()
+						document.body.removeChild(link)
+					}
+
+					trackEvent('download-original', { source })
 				},
 			},
 		]
@@ -1596,7 +1759,17 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 		}
 
 		return actions
-	}, [helpers, _editor, trackEvent, overrides, defaultDocumentName, showCollaborationUi, msg, a11y])
+	}, [
+		helpers,
+		_editor,
+		trackEvent,
+		overrides,
+		defaultDocumentName,
+		showCollaborationUi,
+		msg,
+		a11y,
+		components,
+	])
 
 	return <ActionsContext.Provider value={asActions(actions)}>{children}</ActionsContext.Provider>
 }
