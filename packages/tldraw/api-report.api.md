@@ -1740,6 +1740,12 @@ export function getStrokeOutlineTracks(strokePoints: StrokePoint[], options?: St
 };
 
 // @public
+export function getStrokePoints(rawInputPoints: VecLike[], options?: StrokeOptions): StrokePoint[];
+
+// @public
+export function getSvgPathFromStrokePoints(points: StrokePoint[], closed?: boolean): string;
+
+// @public
 export function getUncroppedSize(shapeSize: {
     h: number;
     w: number;

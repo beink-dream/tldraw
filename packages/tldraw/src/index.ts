@@ -683,6 +683,8 @@ export {
 	getStrokeOutlinePoints,
 	getStrokeOutlineTracks,
 } from './lib/shapes/shared/freehand/getStrokeOutlinePoints'
+export { getStrokePoints  } from './lib/shapes/shared/freehand/getStrokePoints'
+export { getSvgPathFromStrokePoints  } from './lib/shapes/shared/freehand/svg'
 
 ///EraserTool
 export { flattenShapesToImages } from "./lib/ui/hooks/useFlatten";
