@@ -1541,6 +1541,20 @@ export class FrameShapeUtil extends BaseBoxShapeUtil<TLFrameShape> {
 export function FrameToolbarItem(): JSX_2.Element;
 
 // @public (undocumented)
+export class GeoIdle extends StateNode {
+    // (undocumented)
+    static id: string;
+    // (undocumented)
+    onCancel(): void;
+    // (undocumented)
+    onEnter(): void;
+    // (undocumented)
+    onKeyUp(info: TLKeyboardEventInfo): null | undefined;
+    // (undocumented)
+    onPointerDown(info: TLPointerEventInfo): void;
+}
+
+// @public (undocumented)
 export class GeoShapeTool extends StateNode {
     // (undocumented)
     static children(): TLStateNodeConstructor[];
@@ -1718,8 +1732,18 @@ export function getCropBox<T extends ShapeWithCrop>(shape: T, info: TLCropInfo<T
 // @public (undocumented)
 export function getDefaultCrop(): TLShapeCrop;
 
+// @public (undocumented)
+export function getDrawShapeStrokeDashArray(shape: TLDrawShape, strokeWidth: number, dotAdjustment: number): string;
+
 // @public
 export function getEmbedInfo(definitions: readonly TLEmbedDefinition[], inputUrl: string): TLEmbedResult;
+
+// @public (undocumented)
+export function getFreehandOptions(shapeProps: {
+    dash: TLDefaultDashStyle;
+    isComplete: boolean;
+    isPen: boolean;
+}, strokeWidth: number, forceComplete: boolean, forceSolid: boolean): StrokeOptions;
 
 // @public (undocumented)
 export function getGeoShapePath(shape: TLGeoShape): PathBuilder;
@@ -1730,8 +1754,17 @@ export function getHitShapeOnCanvasPointerDown(editor: Editor, hitLabels?: boole
 // @public (undocumented)
 export function getMediaAssetInfoPartial(file: File, assetId: TLAssetId, isImageType: boolean, isVideoType: boolean, maxImageDimension?: number): Promise<TLImageAsset | TLVideoAsset>;
 
+// @public (undocumented)
+export function getPointsFromSegments(segments: TLDrawShapeSegment[]): Vec[];
+
 // @public
 export function getStrokeOutlinePoints(strokePoints: StrokePoint[], options?: StrokeOptions): Vec[];
+
+// @public (undocumented)
+export function getStrokeOutlineTracks(strokePoints: StrokePoint[], options?: StrokeOptions): {
+    left: Vec[];
+    right: Vec[];
+};
 
 // @public
 export function getStrokePoints(rawInputPoints: VecLike[], options?: StrokeOptions): StrokePoint[];
@@ -1850,6 +1883,11 @@ export class HighlightShapeUtil extends ShapeUtil<TLHighlightShape> {
 
 // @public (undocumented)
 export function HighlightToolbarItem(): JSX_2.Element;
+
+// @public (undocumented)
+export function HyperlinkButton({ url }: {
+    url: string;
+}): JSX_2.Element;
 
 // @public (undocumented)
 export class ImageShapeUtil extends BaseBoxShapeUtil<TLImageShape> {
@@ -2673,6 +2711,9 @@ export function setDefaultEditorAssetUrls(assetUrls: TLEditorAssetUrls): void;
 export function setDefaultUiAssetUrls(urls: TLUiAssetUrls): void;
 
 // @public (undocumented)
+export function setStrokePointRadii(strokePoints: StrokePoint[], options: StrokeOptions): StrokePoint[];
+
+// @public (undocumented)
 export interface SolidPathBuilderOpts extends BasePathBuilderOpts {
     // (undocumented)
     style: 'solid';
@@ -2802,6 +2843,34 @@ export interface TextAreaProps {
 
 // @public (undocumented)
 export const TextDirection: Extension<any, any>;
+
+// @public (undocumented)
+export class TextHelpers {
+    // (undocumented)
+    static fixNewLines: RegExp;
+    // (undocumented)
+    static normalizeText(text: string): string;
+    // (undocumented)
+    static normalizeTextForDom(text: string): string;
+}
+
+// @public (undocumented)
+export class TextIdle extends StateNode {
+    // (undocumented)
+    static id: string;
+    // (undocumented)
+    onCancel(): void;
+    // (undocumented)
+    onEnter(): void;
+    // (undocumented)
+    onExit(): void;
+    // (undocumented)
+    onKeyDown(info: TLKeyboardEventInfo): null | undefined;
+    // (undocumented)
+    onPointerDown(info: TLPointerEventInfo): void;
+    // (undocumented)
+    onPointerMove(info: TLPointerEventInfo): void;
+}
 
 // @public @deprecated (undocumented)
 export const TextLabel: React_3.NamedExoticComponent<PlainTextLabelProps>;

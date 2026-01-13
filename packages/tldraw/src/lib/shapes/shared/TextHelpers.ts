@@ -1,7 +1,7 @@
 /**	@public */
 export const INDENT = '  '
 
-/** @internal */
+/** @public */
 export class TextHelpers {
 	static fixNewLines = /\r?\n|\r/g
 

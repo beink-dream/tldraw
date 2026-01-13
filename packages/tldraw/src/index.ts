@@ -708,12 +708,23 @@ export { SvgTextLabel } from './lib/shapes/shared/SvgTextLabel';
 //LineTool
 export { Pointing as LineToolPointing } from "./lib/shapes/line/toolStates/Pointing";
 export { Idle as LineToolIdle } from "./lib/shapes/line/toolStates/Idle";
-export { getStrokeOutlinePoints } from "./lib/shapes/shared/freehand/getStrokeOutlinePoints";
+export { Idle as TextIdle } from "./lib/shapes/text/toolStates/Idle";
+export { Idle as GeoIdle } from "./lib/shapes/geo/toolStates/Idle";
+export {
+	getStrokeOutlinePoints,
+	getStrokeOutlineTracks,
+} from './lib/shapes/shared/freehand/getStrokeOutlinePoints'
 
 ///EraserTool
 export { flattenShapesToImages } from "./lib/ui/hooks/useFlatten";
 
 export { getGeoShapePath } from './lib/shapes/geo/getGeoShapePath';
+
+export { setStrokePointRadii } from './lib/shapes/shared/freehand/setStrokePointRadii';
+export { TextHelpers } from './lib/shapes/shared/TextHelpers';
+export { getFreehandOptions, getPointsFromSegments, getDrawShapeStrokeDashArray } from './lib/shapes/draw/getPath'
+
+export { HyperlinkButton } from './lib/shapes/shared/HyperlinkButton'
 
 registerTldrawLibraryVersion(
 	(globalThis as any).TLDRAW_LIBRARY_NAME,

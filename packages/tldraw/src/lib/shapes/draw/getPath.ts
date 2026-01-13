@@ -73,7 +73,7 @@ export function getHighlightFreehandSettings({
 		last: showAsComplete,
 	}
 }
-
+/** @public */
 export function getFreehandOptions(
 	shapeProps: { dash: TLDefaultDashStyle; isPen: boolean; isComplete: boolean },
 	strokeWidth: number,
@@ -101,6 +101,7 @@ export function getFreehandOptions(
 	return { ...solidSettings(strokeWidth), last }
 }
 
+/** @public */
 export function getPointsFromSegments(segments: TLDrawShapeSegment[]) {
 	const points: Vec[] = []
 
@@ -119,6 +120,7 @@ export function getPointsFromSegments(segments: TLDrawShapeSegment[]) {
 	return points
 }
 
+/** @public */
 export function getDrawShapeStrokeDashArray(
 	shape: TLDrawShape,
 	strokeWidth: number,

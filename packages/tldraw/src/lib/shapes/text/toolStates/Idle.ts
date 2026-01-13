@@ -1,6 +1,7 @@
 import { StateNode, TLKeyboardEventInfo, TLPointerEventInfo } from '@tldraw/editor'
 import { updateHoveredShapeId } from '../../../tools/selection-logic/updateHoveredShapeId'
 
+/** @public */
 export class Idle extends StateNode {
 	static override id = 'idle'
 

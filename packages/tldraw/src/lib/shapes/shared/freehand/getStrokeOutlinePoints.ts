@@ -7,7 +7,7 @@ const { PI } = Math
 const FIXED_PI = PI + 0.0001
 
 /**
- * @internal
+ * @public
  */
 export function getStrokeOutlineTracks(
 	strokePoints: StrokePoint[],
