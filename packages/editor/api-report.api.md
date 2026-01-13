@@ -1309,7 +1309,7 @@ export class Editor extends EventEmitter<TLEventMap> {
         hitInside?: boolean | undefined;
         margin?: number | undefined;
     }): TLShape[];
-    // @internal (undocumented)
+    // (undocumented)
     getShapesPageBounds(shapeIds: TLShapeId[]): Box | null;
     // @internal (undocumented)
     getShapesRotatedPageBounds(shapeIds: TLShapeId[]): Box | undefined;

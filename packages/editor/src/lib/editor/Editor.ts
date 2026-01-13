@@ -2095,7 +2095,7 @@ export class Editor extends EventEmitter<TLEventMap> {
 	}
 
 	/**
-	 * @internal
+	 * @public
 	 */
 	getShapesPageBounds(shapeIds: TLShapeId[]): Box | null {
 		const bounds = compact(shapeIds.map((id) => this.getShapePageBounds(id)))
