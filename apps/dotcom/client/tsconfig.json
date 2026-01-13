@@ -15,8 +15,7 @@
 		"jsx": "preserve",
 		"incremental": true,
 		"downlevelIteration": true,
-		"plugins": [{ "name": "next" }],
-		"types": ["vitest/globals"]
+		"plugins": [{ "name": "next" }]
 	},
 	"include": ["**/*.ts", "**/*.tsx", "zero.config.ts"],
 	"exclude": ["node_modules", "_archive"],

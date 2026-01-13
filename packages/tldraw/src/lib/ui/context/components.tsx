@@ -12,7 +12,6 @@ import {
 import { CursorChatBubble } from '../components/CursorChatBubble'
 import { DefaultDebugMenu } from '../components/DebugMenu/DefaultDebugMenu'
 import { DefaultDebugPanel } from '../components/DefaultDebugPanel'
-import { DefaultFollowingIndicator } from '../components/DefaultFollowingIndicator'
 import { DefaultMenuPanel } from '../components/DefaultMenuPanel'
 import { DefaultDialogs } from '../components/Dialogs'
 import { TLUiHelpMenuProps } from '../components/HelpMenu/DefaultHelpMenu'
@@ -73,7 +72,6 @@ export interface TLUiComponents {
 	Dialogs?: ComponentType | null
 	Toasts?: ComponentType | null
 	A11y?: ComponentType | null
-	FollowingIndicator?: ComponentType | null
 }
 
 const TldrawUiComponentsContext = createContext<TLUiComponents | null>(null)
@@ -121,7 +119,6 @@ export function TldrawUiComponentsProvider({
 					Dialogs: DefaultDialogs,
 					Toasts: DefaultToasts,
 					A11y: DefaultA11yAnnouncer,
-					FollowingIndicator: DefaultFollowingIndicator,
 					..._overrides,
 				}),
 				[_overrides, showCollaborationUi]

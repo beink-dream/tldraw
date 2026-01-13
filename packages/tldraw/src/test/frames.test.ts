@@ -8,14 +8,13 @@ import {
 	createShapeId,
 	toRichText,
 } from '@tldraw/editor'
-import { vi } from 'vitest'
 import { getArrowBindings } from '../lib/shapes/arrow/shared'
 import { DEFAULT_FRAME_PADDING, fitFrameToContent, removeFrame } from '../lib/utils/frames/frames'
 import { TestEditor } from './TestEditor'
 
 let editor: TestEditor
 
-vi.useFakeTimers()
+jest.useFakeTimers()
 
 beforeEach(() => {
 	editor = new TestEditor()
@@ -336,7 +335,7 @@ describe('frame shapes', () => {
 		// move to the center of the frame
 		editor.pointerMove(100, 100)
 
-		vi.advanceTimersByTime(300)
+		jest.advanceTimersByTime(300)
 
 		// Expect the shape to be inside the frame
 		expect(editor.getOnlySelectedShape()!.id).toBe(ids.boxA)
@@ -344,13 +343,13 @@ describe('frame shapes', () => {
 
 		// Move out of the frame
 		editor.pointerMove(275, 275)
-		vi.advanceTimersByTime(250)
+		jest.advanceTimersByTime(250)
 
 		expect(editor.getOnlySelectedShape()!.parentId).toBe(editor.getCurrentPageId())
 
 		// Move back into the frame
 		editor.pointerMove(150, 150)
-		vi.advanceTimersByTime(250)
+		jest.advanceTimersByTime(250)
 
 		// Expect the shape to be inside the frame again
 		expect(editor.getOnlySelectedShape()!.parentId).toBe(frameId)
@@ -385,7 +384,7 @@ describe('frame shapes', () => {
 
 		editor.setCurrentTool('select').select(box1.id).pointerDown(127, 127).pointerMove(132, 127)
 
-		vi.advanceTimersByTime(250)
+		jest.advanceTimersByTime(250)
 
 		expect(editor.getOnlySelectedShape()!.id).toBe(box1.id)
 		if (editor.getShape(box1)?.parentId !== frame.id) {
@@ -404,14 +403,14 @@ describe('frame shapes', () => {
 		editor.pointerMove(175, 175)
 		expect(editor.getOnlySelectedShape()!.parentId).toBe(frame.id)
 
-		vi.advanceTimersByTime(250)
+		jest.advanceTimersByTime(250)
 		expect(editor.getOnlySelectedShape()!.parentId).toBe(frame.id)
 
 		// Let's try that
 		editor.pointerMove(1750, 1750)
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 		editor.pointerMove(175, 175)
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 
 		// yay
 		expect(editor.getHintingShapeIds()).toHaveLength(1)
@@ -959,7 +958,7 @@ describe('When dragging a shape inside a group inside a frame', () => {
 		editor.pointerMove(150, 150).pointerDown(150, 150).pointerMove(140, 140)
 
 		expect(editor.getOnlySelectedShapeId()).toBe(ids.box1)
-		vi.advanceTimersByTime(300)
+		jest.advanceTimersByTime(300)
 
 		expect(editor.getShape(ids.box1)!.parentId).toBe(ids.group1)
 	})
@@ -974,7 +973,7 @@ it('Drags into a frame', () => {
 	editor.pointerDown(550, 550)
 	editor.pointerMove(250, 250)
 
-	vi.advanceTimersByTime(200)
+	jest.advanceTimersByTime(200)
 
 	expect(editor.getShape(box1)!.parentId).toBe(frame.id)
 })
@@ -993,7 +992,7 @@ it('Allows dragging grouped shapes into frames if every shape in the group is in
 	editor.pointerDown(1100, 1100)
 	editor.pointerMove(250, 250)
 
-	vi.advanceTimersByTime(250)
+	jest.advanceTimersByTime(250)
 
 	expect(editor.getHintingShapeIds()).toMatchObject([frame.id])
 
@@ -1069,7 +1068,7 @@ describe('When dragging a shape', () => {
 		editor.pointerMove(30, 50)
 		editor.pointerUp(30, 50)
 		const parent = editor.getShape(rectId)?.parentId
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 		expect(parent).toBe(frameId)
 	})
 
@@ -1186,7 +1185,7 @@ describe('Unparenting behavior', () => {
 	// 	expect(editor.getShape(rect.id)!.parentId).toBe(frame.id)
 	// 	editor.pointerDown(90, 50)
 	// 	editor.pointerMove(110, 50)
-	// 	vi.advanceTimersByTime(200)
+	// 	jest.advanceTimersByTime(200)
 	// 	expect(editor.getShape(rect.id)!.parentId).toBe(editor.getCurrentPageId())
 	// 	editor.pointerUp(110, 50)
 	// 	expect(editor.getShape(rect.id)!.parentId).toBe(editor.getCurrentPageId())
@@ -1200,7 +1199,7 @@ describe('Unparenting behavior', () => {
 		expect(editor.getShape(rect.id)!.parentId).toBe(frame.id)
 		editor.pointerDown(90, 50)
 		editor.pointerMove(110, 50)
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 		expect(editor.getShape(rect.id)!.parentId).toBe(editor.getCurrentPageId())
 		editor.pointerUp(110, 50)
 		expect(editor.getShape(rect.id)!.parentId).toBe(editor.getCurrentPageId())
@@ -1300,7 +1299,7 @@ describe('Unparenting behavior', () => {
 		expect(editor.getShape(triangle.id)!.parentId).toBe(frame.id)
 
 		// But after a delay, the triangle is reparented because it's not overlapping
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 		expect(editor.getShape(triangle.id)!.parentId).toBe(editor.getCurrentPageId())
 
 		editor.pointerMove(50, 50)
@@ -1309,7 +1308,7 @@ describe('Unparenting behavior', () => {
 		expect(editor.getShape(triangle.id)!.parentId).toBe(editor.getCurrentPageId())
 
 		// But after a delay, the triangle is reparented because it's overlapping
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 		expect(editor.getShape(triangle.id)!.parentId).toBe(frame.id)
 	})
 
@@ -1349,12 +1348,12 @@ describe('Unparenting behavior', () => {
 			expect(editor.isIn('select.translating')).toBe(true)
 
 			// Wait for reparenting to happen
-			vi.advanceTimersByTime(250)
+			jest.advanceTimersByTime(250)
 			expect(editor.getShape(largeRect.id)!.parentId).toBe(frameId)
 
 			// The large rectangle should now be reparented to the frame, even though the frame covers it
 			editor.pointerUp(250, 250)
-			vi.advanceTimersByTime(250)
+			jest.advanceTimersByTime(250)
 		}
 
 		// When the shape has no fill and an empty label, it should fall out of the frame
@@ -1504,7 +1503,7 @@ describe('When dragging groups or shapes within a group', () => {
 		editor.pointerDown(1100, 1100)
 		editor.pointerMove(250, 250)
 
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 
 		expect(editor.getShape(group)!.parentId).toBe(frame.id)
 	})
@@ -1527,14 +1526,14 @@ describe('When dragging groups or shapes within a group', () => {
 		editor.select(rect1ID)
 		editor.pointerDown(15, 15)
 		editor.pointerMove(100, 100)
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 
 		expect(editor.getShape(rect1ID)?.parentId).toBe(group.id)
 		expect(editor.getShape(rect2ID)?.parentId).toBe(group.id)
 		expect(group.parentId).toBe(frame.id)
 
 		editor.pointerUp(100, 100)
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 
 		expect(editor.getShape(rect1ID)?.parentId).toBe(group.id)
 		expect(editor.getShape(rect2ID)?.parentId).toBe(group.id)
@@ -1559,7 +1558,7 @@ describe('When dragging groups or shapes within a group', () => {
 		editor.pointerDown(15, 15)
 		editor.pointerMove(200, 200)
 
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 		expect(editor.getShape(rect1ID)?.parentId).toBe(group.id)
 		expect(editor.getShape(rect2ID)?.parentId).toBe(group.id)
 		expect(editor.getShape(group.id)?.parentId).toBe(editor.getCurrentPageId())
@@ -1588,7 +1587,7 @@ describe('When dragging groups or shapes within a group', () => {
 		editor.pointerDown(15, 15)
 		editor.pointerMove(200, 200)
 
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 		expect(editor.getShape(rect1ID)?.parentId).toBe(group.id)
 		expect(editor.getShape(rect2ID)?.parentId).toBe(group.id)
 		expect(editor.getShape(group.id)?.parentId).toBe(editor.getCurrentPageId())
@@ -1639,7 +1638,7 @@ describe('When dragging groups or shapes within a group', () => {
 		editor.pointerDown(215, 215)
 		editor.pointerMove(15, 15)
 
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 		expect(editor.getShape(rect1ID)?.parentId).toBe(group.id)
 		expect(editor.getShape(rect2ID)?.parentId).toBe(group.id)
 		expect(editor.getShape(group.id)?.parentId).toBe(frameID)

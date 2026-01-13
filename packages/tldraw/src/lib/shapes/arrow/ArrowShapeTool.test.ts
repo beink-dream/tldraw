@@ -1,5 +1,4 @@
 import { IndexKey, TLArrowShape, TLShapeId, Vec, createShapeId } from '@tldraw/editor'
-import { vi } from 'vitest'
 import { TestEditor } from '../../../test/TestEditor'
 import { getArrowTargetState } from './arrowTargetState'
 import { getArrowBindings } from './shared'
@@ -14,7 +13,7 @@ global.cancelAnimationFrame = function cancelAnimationFrame(id) {
 	clearTimeout(id)
 }
 
-vi.useFakeTimers()
+jest.useFakeTimers()
 
 const ids = {
 	box1: createShapeId('box1'),
@@ -243,7 +242,7 @@ describe('When pointing an end shape', () => {
 			},
 		})
 
-		vi.advanceTimersByTime(1000)
+		jest.advanceTimersByTime(1000)
 
 		arrow = editor.getCurrentPageShapes()[editor.getCurrentPageShapes().length - 1]
 
@@ -307,7 +306,7 @@ describe('When pointing an end shape', () => {
 		})
 
 		// Give time for the velocity to die down
-		vi.advanceTimersByTime(1000)
+		jest.advanceTimersByTime(1000)
 
 		arrow = editor.getCurrentPageShapes()[editor.getCurrentPageShapes().length - 1]
 

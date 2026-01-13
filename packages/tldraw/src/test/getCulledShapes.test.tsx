@@ -1,5 +1,4 @@
 import { Box, TLShapeId, createShapeId } from '@tldraw/editor'
-import { vi } from 'vitest'
 import { TestEditor } from './TestEditor'
 import { TL } from './test-jsx'
 
@@ -29,13 +28,13 @@ it('lists shapes in viewport', () => {
 
 	// Move the camera 201 pixels to the right and 201 pixels down
 	editor.pan({ x: -201, y: -201 })
-	vi.advanceTimersByTime(500)
+	jest.advanceTimersByTime(500)
 
 	// A is now outside of the viewport, like D
 	expect(editor.getCulledShapes()).toStrictEqual(new Set([ids.A, ids.D]))
 
 	editor.pan({ x: -900, y: -900 })
-	vi.advanceTimersByTime(500)
+	jest.advanceTimersByTime(500)
 	// Now all shapes are outside of the viewport, except for D (which is clipped)
 	expect(editor.getCulledShapes()).toStrictEqual(new Set([ids.A, ids.B, ids.C]))
 

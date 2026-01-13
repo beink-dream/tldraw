@@ -40,11 +40,6 @@ export interface GetReadonlySlugResponseBody {
 	isLegacy: boolean
 }
 
-export interface HistoryResponseBody {
-	timestamps: string[]
-	hasMore: boolean
-}
-
 /* ----------------------- App ---------------------- */
 
 export interface CreateFilesRequestBody {
@@ -167,7 +162,6 @@ export const UserPreferencesKeys = [
 	'isWrapMode',
 	'isDynamicSizeMode',
 	'isPasteAtCursorMode',
-	'showUiLabels',
 	'name',
 	'color',
 ] as const satisfies Array<keyof TlaUser>

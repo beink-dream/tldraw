@@ -1,5 +1,4 @@
 import {
-	getColorValue,
 	TLDefaultColorStyle,
 	TLDefaultColorTheme,
 	TLDefaultFillStyle,
@@ -30,13 +29,13 @@ export const ShapeFill = React.memo(function ShapeFill({
 			return null
 		}
 		case 'solid': {
-			return <path fill={getColorValue(theme, color, 'semi')} d={d} />
+			return <path fill={theme[color].semi} d={d} />
 		}
 		case 'semi': {
 			return <path fill={theme.solid} d={d} />
 		}
 		case 'fill': {
-			return <path fill={getColorValue(theme, color, 'fill')} d={d} />
+			return <path fill={theme[color].fill} d={d} />
 		}
 		case 'pattern': {
 			return <PatternFill theme={theme} color={color} fill={fill} d={d} scale={scale} />
@@ -54,13 +53,13 @@ export function PatternFill({ d, color, theme }: ShapeFillProps) {
 
 	return (
 		<>
-			<path fill={getColorValue(theme, color, 'pattern')} d={d} />
+			<path fill={theme[color].pattern} d={d} />
 			<path
 				fill={
 					svgExport
 						? `url(#${getHashPatternZoomName(1, theme.id)})`
 						: teenyTiny
-							? getColorValue(theme, color, 'semi')
+							? theme[color].semi
 							: `url(#${getHashPatternZoomName(zoomLevel, theme.id)})`
 				}
 				d={d}

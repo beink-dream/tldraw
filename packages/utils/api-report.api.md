@@ -19,8 +19,7 @@ export function areArraysShallowEqual<T>(arr1: readonly T[], arr2: readonly T[])
 export function areObjectsShallowEqual<T extends object>(obj1: T, obj2: T): boolean;
 
 // @internal (undocumented)
-const assert_2: (value: unknown, message?: string) => asserts value;
-export { assert_2 as assert }
+export const assert: (value: unknown, message?: string) => asserts value;
 
 // @internal (undocumented)
 export const assertExists: <T>(value: T, message?: string | undefined) => NonNullable<T>;
@@ -338,11 +337,6 @@ export const noop: () => void;
 export function objectMapEntries<Key extends string, Value>(object: {
     [K in Key]: Value;
 }): Array<[Key, Value]>;
-
-// @internal
-export function objectMapEntriesIterable<Key extends string, Value>(object: {
-    [K in Key]: Value;
-}): IterableIterator<[Key, Value]>;
 
 // @internal
 export function objectMapFromEntries<Key extends string, Value>(entries: ReadonlyArray<readonly [Key, Value]>): {

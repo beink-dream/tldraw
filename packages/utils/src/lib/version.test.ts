@@ -1,29 +1,28 @@
-import { vi } from 'vitest'
 import { clearRegisteredVersionsForTests, registerTldrawLibraryVersion } from './version'
 
-vi.useFakeTimers()
+jest.useFakeTimers()
 
 describe('registerTldrawLibraryVersion', () => {
 	afterEach(() => {
 		clearRegisteredVersionsForTests()
-		vi.restoreAllMocks()
+		jest.restoreAllMocks()
 	})
 
 	it('doesnt log anything if all versions are the same', () => {
-		const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+		const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation()
 
 		registerTldrawLibraryVersion('tldraw', '1.0.0', 'esm')
 		registerTldrawLibraryVersion('@tldraw/editor', '1.0.0', 'esm')
 		registerTldrawLibraryVersion('@tldraw/utils', '1.0.0', 'esm')
 		registerTldrawLibraryVersion('@tldraw/tlschema', '1.0.0', 'esm')
 
-		vi.runAllTimers()
+		jest.runAllTimers()
 
 		expect(consoleLogSpy).toHaveBeenCalledTimes(0)
 	})
 
 	it('logs if not all versions match', () => {
-		const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+		const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation()
 
 		registerTldrawLibraryVersion('tldraw', '1.0.0', 'esm')
 		registerTldrawLibraryVersion('@tldraw/editor', '1.1.0', 'esm')
@@ -31,7 +30,7 @@ describe('registerTldrawLibraryVersion', () => {
 		registerTldrawLibraryVersion('@tldraw/utils', '1.2.0', 'esm')
 		registerTldrawLibraryVersion('@tldraw/tlschema', '1.2.0', 'esm')
 
-		vi.runAllTimers()
+		jest.runAllTimers()
 
 		expect(consoleLogSpy).toHaveBeenCalledTimes(1)
 		expect(consoleLogSpy.mock.lastCall).toMatchInlineSnapshot(`
@@ -50,7 +49,7 @@ describe('registerTldrawLibraryVersion', () => {
 	})
 
 	it('logs if multiple versions of te same library are installed', () => {
-		const consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+		const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation()
 
 		registerTldrawLibraryVersion('tldraw', '1.1.0', 'esm')
 		registerTldrawLibraryVersion('@tldraw/editor', '1.1.0', 'esm')
@@ -59,7 +58,7 @@ describe('registerTldrawLibraryVersion', () => {
 		registerTldrawLibraryVersion('@tldraw/utils', '1.1.0', 'cjs')
 		registerTldrawLibraryVersion('@tldraw/tlschema', '1.1.0', 'esm')
 
-		vi.runAllTimers()
+		jest.runAllTimers()
 
 		expect(consoleLogSpy).toHaveBeenCalledTimes(1)
 		expect(consoleLogSpy.mock.lastCall).toMatchInlineSnapshot(`

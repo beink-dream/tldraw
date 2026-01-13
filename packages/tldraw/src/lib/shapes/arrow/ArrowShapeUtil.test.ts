@@ -1,5 +1,4 @@
-import { HALF_PI, TLArrowShape, TLShapeId, createShapeId, toRichText } from '@tldraw/editor'
-import { vi } from 'vitest'
+import { HALF_PI, TLArrowShape, TLShapeId, createShapeId } from '@tldraw/editor'
 import { TestEditor } from '../../../test/TestEditor'
 import { createOrUpdateArrowBinding, getArrowBindings } from './shared'
 
@@ -13,7 +12,7 @@ const ids = {
 	arrow1: createShapeId('arrow1'),
 }
 
-vi.useFakeTimers()
+jest.useFakeTimers()
 
 window.requestAnimationFrame = function requestAnimationFrame(cb) {
 	return setTimeout(cb, 1000 / 60)
@@ -218,7 +217,7 @@ describe('Other cases when arrow are moved', () => {
 		// When box one is not selected, unbinds box1 and keeps binding to box2
 		editor.select(ids.arrow1, ids.box2, ids.box3)
 		editor.alignShapes(editor.getSelectedShapeIds(), 'right')
-		vi.advanceTimersByTime(1000)
+		jest.advanceTimersByTime(1000)
 
 		expect(bindings()).toMatchObject({
 			start: { toId: ids.box1, props: { isPrecise: false } },
@@ -228,7 +227,7 @@ describe('Other cases when arrow are moved', () => {
 		// maintains bindings if they would still be over the same shape (but makes them precise), but unbinds others
 		editor.select(ids.arrow1, ids.box3)
 		editor.alignShapes(editor.getSelectedShapeIds(), 'top')
-		vi.advanceTimersByTime(1000)
+		jest.advanceTimersByTime(1000)
 
 		expect(bindings()).toMatchObject({
 			start: { toId: ids.box1, props: { isPrecise: true } },
@@ -245,7 +244,7 @@ describe('Other cases when arrow are moved', () => {
 		// When box one is not selected, unbinds box1 and keeps binding to box2
 		editor.select(ids.arrow1, ids.box2, ids.box3)
 		editor.distributeShapes(editor.getSelectedShapeIds(), 'horizontal')
-		vi.advanceTimersByTime(1000)
+		jest.advanceTimersByTime(1000)
 
 		expect(bindings()).toMatchObject({
 			start: { toId: ids.box1, props: { isPrecise: false } },
@@ -255,7 +254,7 @@ describe('Other cases when arrow are moved', () => {
 		// unbinds when only the arrow is selected (not its bound shapes) if the arrow itself has moved
 		editor.select(ids.arrow1, ids.box3, ids.box4)
 		editor.distributeShapes(editor.getSelectedShapeIds(), 'vertical')
-		vi.advanceTimersByTime(1000)
+		jest.advanceTimersByTime(1000)
 
 		// The arrow didn't actually move
 		expect(bindings()).toMatchObject({
@@ -266,7 +265,7 @@ describe('Other cases when arrow are moved', () => {
 		// The arrow will not move because it is still bound to another shape
 		editor.updateShapes([{ id: ids.box4, type: 'geo', y: -600 }])
 		editor.distributeShapes(editor.getSelectedShapeIds(), 'vertical')
-		vi.advanceTimersByTime(1000)
+		jest.advanceTimersByTime(1000)
 
 		expect(bindings()).toMatchObject({
 			start: undefined,
@@ -334,7 +333,7 @@ describe('Arrow labels', () => {
 		editor.setCurrentTool('arrow').pointerDown(10, 10).pointerMove(100, 100).pointerUp()
 		const arrowId = editor.getOnlySelectedShape()!.id
 		editor.updateShapes<TLArrowShape>([
-			{ id: arrowId, type: 'arrow', props: { richText: toRichText('Test Label') } },
+			{ id: arrowId, type: 'arrow', props: { text: 'Test Label' } },
 		])
 	})
 
@@ -342,7 +341,7 @@ describe('Arrow labels', () => {
 		const arrowId = editor.getOnlySelectedShape()!.id
 		expect(arrow(arrowId)).toMatchObject({
 			props: {
-				richText: toRichText('Test Label'),
+				text: 'Test Label',
 			},
 		})
 	})
@@ -350,11 +349,11 @@ describe('Arrow labels', () => {
 	it('should update the label of an arrow', () => {
 		const arrowId = editor.getOnlySelectedShape()!.id
 		editor.updateShapes<TLArrowShape>([
-			{ id: arrowId, type: 'arrow', props: { richText: toRichText('New Label') } },
+			{ id: arrowId, type: 'arrow', props: { text: 'New Label' } },
 		])
 		expect(arrow(arrowId)).toMatchObject({
 			props: {
-				richText: toRichText('New Label'),
+				text: 'New Label',
 			},
 		})
 	})

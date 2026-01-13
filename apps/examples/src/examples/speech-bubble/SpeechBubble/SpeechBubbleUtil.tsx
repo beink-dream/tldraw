@@ -19,7 +19,6 @@ import {
 	TLResizeInfo,
 	Vec,
 	ZERO_INDEX_KEY,
-	getColorValue,
 	resizeBox,
 	structuredClone,
 	useDefaultColorTheme,
@@ -190,7 +189,7 @@ export class SpeechBubbleUtil extends ShapeUtil<SpeechBubbleShape> {
 					<path
 						d={pathData}
 						strokeWidth={STROKE_SIZES[size]}
-						stroke={getColorValue(theme, color, 'solid')}
+						stroke={theme[color].solid}
 						fill={'none'}
 					/>
 				</svg>
@@ -204,7 +203,7 @@ export class SpeechBubbleUtil extends ShapeUtil<SpeechBubbleShape> {
 					align={align}
 					verticalAlign="start"
 					text={text}
-					labelColor={getColorValue(theme, color, 'solid')}
+					labelColor={theme[color].solid}
 					isSelected={isSelected}
 					wrap
 				/>

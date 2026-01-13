@@ -19,7 +19,6 @@ import {
 	compact,
 	frameShapeMigrations,
 	frameShapeProps,
-	getColorValue,
 	getDefaultColorTheme,
 	lerp,
 	resizeBox,
@@ -98,10 +97,6 @@ export class FrameShapeUtil extends BaseBoxShapeUtil<TLFrameShape> {
 
 	override canResizeChildren() {
 		return false
-	}
-
-	override isExportBoundsContainer(): boolean {
-		return true
 	}
 
 	override getDefaultProps(): TLFrameShape['props'] {
@@ -225,16 +220,13 @@ export class FrameShapeUtil extends BaseBoxShapeUtil<TLFrameShape> {
 		)
 
 		const showFrameColors = this.options.showColors
-		const colorToUse = showFrameColors ? shape.props.color : 'black'
-		const frameFill = getColorValue(theme, colorToUse, 'frameFill')
-		const frameStroke = getColorValue(theme, colorToUse, 'frameStroke')
-		const frameHeadingStroke = showFrameColors
-			? getColorValue(theme, colorToUse, 'frameHeadingStroke')
-			: theme.background
-		const frameHeadingFill = showFrameColors
-			? getColorValue(theme, colorToUse, 'frameHeadingFill')
-			: theme.background
-		const frameHeadingText = getColorValue(theme, colorToUse, 'frameText')
+
+		const color = theme[shape.props.color]
+		const frameFill = showFrameColors ? color.frame.fill : theme.black.frame.fill
+		const frameStroke = showFrameColors ? color.frame.stroke : theme.black.frame.stroke
+		const frameHeadingStroke = showFrameColors ? color.frame.headingStroke : theme.background
+		const frameHeadingFill = showFrameColors ? color.frame.headingFill : theme.background
+		const frameHeadingText = showFrameColors ? color.frame.text : theme.text
 
 		return (
 			<>
@@ -285,16 +277,13 @@ export class FrameShapeUtil extends BaseBoxShapeUtil<TLFrameShape> {
 		const text = createTextJsxFromSpans(this.editor, spans, opts)
 
 		const showFrameColors = this.options.showColors
-		const colorToUse = showFrameColors ? shape.props.color : 'black'
-		const frameFill = getColorValue(theme, colorToUse, 'frameFill')
-		const frameStroke = getColorValue(theme, colorToUse, 'frameStroke')
-		const frameHeadingStroke = showFrameColors
-			? getColorValue(theme, colorToUse, 'frameHeadingStroke')
-			: theme.background
-		const frameHeadingFill = showFrameColors
-			? getColorValue(theme, colorToUse, 'frameHeadingFill')
-			: theme.background
-		const frameHeadingText = getColorValue(theme, colorToUse, 'frameText')
+
+		const color = theme[shape.props.color]
+		const frameFill = showFrameColors ? color.frame.fill : theme.black.frame.fill
+		const frameStroke = showFrameColors ? color.frame.stroke : theme.black.frame.stroke
+		const frameHeadingStroke = showFrameColors ? color.frame.headingStroke : theme.background
+		const frameHeadingFill = showFrameColors ? color.frame.headingFill : theme.background
+		const frameHeadingText = showFrameColors ? color.frame.text : theme.text
 
 		return (
 			<>
@@ -337,10 +326,6 @@ export class FrameShapeUtil extends BaseBoxShapeUtil<TLFrameShape> {
 
 	override providesBackgroundForChildren(): boolean {
 		return true
-	}
-
-	override getClipPath(shape: TLFrameShape) {
-		return this.editor.getShapeGeometry(shape.id).vertices
 	}
 
 	override canReceiveNewChildrenOfType(shape: TLShape) {

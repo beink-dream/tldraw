@@ -2,7 +2,6 @@ import { getLicenseKey } from '@tldraw/dotcom-shared'
 import { ReactNode } from 'react'
 import { Editor, TLComponents, Tldraw, TldrawOptions, useEvent } from 'tldraw'
 import { SneakyToolSwitcher } from '../tla/components/TlaEditor/sneaky/SneakyToolSwitcher'
-import { useExtraDragIconOverrides } from '../tla/components/TlaEditor/useExtraToolDragIcons'
 import { useFileEditorOverrides } from '../tla/components/TlaEditor/useFileEditorOverrides'
 import { useHandleUiEvents } from '../utils/analytics'
 import { assetUrls } from '../utils/assetUrls'
@@ -28,7 +27,6 @@ export function LocalEditor({
 }) {
 	const handleUiEvent = useHandleUiEvents()
 	const fileSystemUiOverrides = useFileEditorOverrides({})
-	const extraDragIconOverrides = useExtraDragIconOverrides()
 
 	const handleMount = useEvent((editor: Editor) => {
 		;(window as any).app = editor
@@ -44,7 +42,7 @@ export function LocalEditor({
 				assetUrls={assetUrls}
 				persistenceKey={persistenceKey ?? getScratchPersistenceKey()}
 				onMount={handleMount}
-				overrides={[fileSystemUiOverrides, extraDragIconOverrides]}
+				overrides={[fileSystemUiOverrides]}
 				onUiEvent={handleUiEvent}
 				components={components}
 				options={options}

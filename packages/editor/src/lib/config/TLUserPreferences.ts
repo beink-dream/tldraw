@@ -24,7 +24,6 @@ export interface TLUserPreferences {
 	isWrapMode?: boolean | null
 	isDynamicSizeMode?: boolean | null
 	isPasteAtCursorMode?: boolean | null
-	showUiLabels?: boolean | null
 }
 
 interface UserDataSnapshot {
@@ -53,7 +52,6 @@ export const userTypeValidator: T.Validator<TLUserPreferences> = T.object<TLUser
 	isWrapMode: T.boolean.nullable().optional(),
 	isDynamicSizeMode: T.boolean.nullable().optional(),
 	isPasteAtCursorMode: T.boolean.nullable().optional(),
-	showUiLabels: T.boolean.nullable().optional(),
 })
 
 const Versions = {
@@ -66,7 +64,6 @@ const Versions = {
 	AllowSystemColorScheme: 7,
 	AddPasteAtCursor: 8,
 	AddKeyboardShortcuts: 9,
-	AddShowUiLabels: 10,
 } as const
 
 const CURRENT_VERSION = Math.max(...Object.values(Versions))
@@ -105,9 +102,6 @@ function migrateSnapshot(data: { version: number; user: any }) {
 	if (data.version < Versions.AddKeyboardShortcuts) {
 		data.user.areKeyboardShortcutsEnabled = true
 	}
-	if (data.version < Versions.AddShowUiLabels) {
-		data.user.showUiLabels = false
-	}
 
 	// finally
 	data.version = CURRENT_VERSION
@@ -135,7 +129,7 @@ function getRandomColor() {
 
 /** @internal */
 export function userPrefersReducedMotion() {
-	if (typeof window !== 'undefined' && window.matchMedia) {
+	if (typeof window !== 'undefined' && 'matchMedia' in window) {
 		return window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false
 	}
 
@@ -156,7 +150,6 @@ export const defaultUserPreferences = Object.freeze({
 	isWrapMode: false,
 	isDynamicSizeMode: false,
 	isPasteAtCursorMode: false,
-	showUiLabels: false,
 	colorScheme: 'light',
 }) satisfies Readonly<Omit<TLUserPreferences, 'id'>>
 

@@ -1,5 +1,4 @@
 import {
-	isAccelKey,
 	StateNode,
 	TLFrameShape,
 	TLGroupShape,
@@ -10,11 +9,7 @@ import {
 export class Pointing extends StateNode {
 	static override id = 'pointing'
 
-	_isHoldingAccelKey = false
-
 	override onEnter() {
-		this._isHoldingAccelKey = isAccelKey(this.editor.inputs)
-
 		const zoomLevel = this.editor.getZoomLevel()
 		const currentPageShapesSorted = this.editor.getCurrentPageRenderingShapesSorted()
 		const {
@@ -50,23 +45,10 @@ export class Pointing extends StateNode {
 				}
 
 				erasing.add(hitShape.id)
-
-				// If the user is holding the meta / ctrl key, stop after the first shape
-				if (this._isHoldingAccelKey) {
-					break
-				}
 			}
 		}
 
 		this.editor.setErasingShapes([...erasing])
-	}
-
-	override onKeyUp() {
-		this._isHoldingAccelKey = isAccelKey(this.editor.inputs)
-	}
-
-	override onKeyDown() {
-		this._isHoldingAccelKey = isAccelKey(this.editor.inputs)
 	}
 
 	override onLongPress(info: TLPointerEventInfo) {
@@ -80,8 +62,6 @@ export class Pointing extends StateNode {
 	}
 
 	override onPointerMove(info: TLPointerEventInfo) {
-		if (this._isHoldingAccelKey) return
-
 		if (this.editor.inputs.isDragging) {
 			this.startErasing(info)
 		}

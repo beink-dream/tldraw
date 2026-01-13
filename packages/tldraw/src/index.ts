@@ -22,20 +22,8 @@ export {
 } from './lib/shapes/shared/PathBuilder'
 export { usePrefersReducedMotion } from './lib/shapes/shared/usePrefersReducedMotion'
 export { DefaultA11yAnnouncer, useSelectedShapesAnnouncer } from './lib/ui/components/A11y'
-export { AccessibilityMenu } from './lib/ui/components/AccessibilityMenu'
 export { ColorSchemeMenu } from './lib/ui/components/ColorSchemeMenu'
-export { DefaultFollowingIndicator } from './lib/ui/components/DefaultFollowingIndicator'
 export { DefaultDialogs } from './lib/ui/components/Dialogs'
-export {
-	TldrawUiColumn,
-	TldrawUiGrid,
-	TldrawUiOrientationProvider,
-	TldrawUiRow,
-	useTldrawUiOrientation,
-	type TldrawUiOrientationContext,
-	type TldrawUiOrientationProviderProps,
-	type TLUiLayoutProps,
-} from './lib/ui/components/primitives/layout'
 export {
 	TldrawUiMenuActionCheckboxItem,
 	type TLUiMenuActionCheckboxItemProps,
@@ -53,7 +41,6 @@ export { TldrawUiTranslationProvider } from './lib/ui/hooks/useTranslation/useTr
 // eslint-disable-next-line local/no-export-star
 export * from '@tldraw/editor'
 export { ArrowBindingUtil } from './lib/bindings/arrow/ArrowBindingUtil'
-export { TldrawCropHandles, type TldrawCropHandlesProps } from './lib/canvas/TldrawCropHandles'
 export { TldrawHandles } from './lib/canvas/TldrawHandles'
 export { TldrawArrowHints, TldrawOverlays } from './lib/canvas/TldrawOverlays'
 export { TldrawScribble } from './lib/canvas/TldrawScribble'
@@ -84,9 +71,7 @@ export {
 	defaultHandleExternalTldrawContent,
 	defaultHandleExternalUrlAsset,
 	defaultHandleExternalUrlContent,
-	getAssetInfo,
 	getMediaAssetInfoPartial,
-	notifyIfFileNotAllowed,
 	registerDefaultExternalContentHandlers,
 	type TLDefaultExternalContentHandlerOpts,
 	type TLExternalContentProps,
@@ -168,9 +153,6 @@ export {
 	type TLDefaultFont,
 	type TLDefaultFonts,
 } from './lib/shapes/shared/defaultFonts'
-export { getStrokePoints } from './lib/shapes/shared/freehand/getStrokePoints'
-export { getSvgPathFromStrokePoints } from './lib/shapes/shared/freehand/svg'
-export { type StrokeOptions, type StrokePoint } from './lib/shapes/shared/freehand/types'
 export {
 	PlainTextLabel,
 	TextLabel,
@@ -201,7 +183,6 @@ export { TldrawImage, type TldrawImageProps } from './lib/TldrawImage'
 export { EraserTool } from './lib/tools/EraserTool/EraserTool'
 export { HandTool } from './lib/tools/HandTool/HandTool'
 export { LaserTool } from './lib/tools/LaserTool/LaserTool'
-export { getHitShapeOnCanvasPointerDown } from './lib/tools/selection-logic/getHitShapeOnCanvasPointerDown'
 export { SelectTool } from './lib/tools/SelectTool/SelectTool'
 export { ZoomTool } from './lib/tools/ZoomTool/ZoomTool'
 export {
@@ -269,7 +250,6 @@ export {
 	EditSubmenu,
 	ExportFileContentSubMenu,
 	ExtrasGroup,
-	LockGroup,
 	MiscMenuGroup,
 	PreferencesGroup,
 	UndoRedoGroup,
@@ -310,7 +290,6 @@ export {
 	ToggleSnapModeItem,
 	ToggleToolLockItem,
 	ToggleTransparentBgMenuItem,
-	ToggleUiLabelsItem,
 	ToggleWrapModeItem,
 	UngroupMenuItem,
 	UnlockAllMenuItem,
@@ -430,12 +409,6 @@ export {
 	type TLUiToolbarToggleItemProps,
 } from './lib/ui/components/primitives/TldrawUiToolbar'
 export {
-	TldrawUiTooltip,
-	TldrawUiTooltipProvider,
-	type TldrawUiTooltipProps,
-	type TldrawUiTooltipProviderProps,
-} from './lib/ui/components/primitives/TldrawUiTooltip'
-export {
 	DefaultQuickActions,
 	type TLUiQuickActionsProps,
 } from './lib/ui/components/QuickActions/DefaultQuickActions'
@@ -527,10 +500,6 @@ export {
 	type OverflowingToolbarProps,
 } from './lib/ui/components/Toolbar/OverflowingToolbar'
 export {
-	ToggleToolLockedButton,
-	type ToggleToolLockedButtonProps,
-} from './lib/ui/components/Toolbar/ToggleToolLockedButton'
-export {
 	CenteredTopPanelContainer,
 	type CenteredTopPanelContainerProps,
 } from './lib/ui/components/TopPanel/CenteredTopPanelContainer'
@@ -599,7 +568,7 @@ export {
 	type TLUiToastsContextType,
 	type TLUiToastsProviderProps,
 } from './lib/ui/context/toasts'
-export { useCanRedo, useCanUndo, useUnlockedSelectedShapesCount } from './lib/ui/hooks/menu-hooks'
+export { useCanRedo, useCanUndo } from './lib/ui/hooks/menu-hooks'
 export { useMenuClipboardEvents, useNativeClipboardEvents } from './lib/ui/hooks/useClipboardEvents'
 export {
 	useCollaborationStatus,
@@ -613,9 +582,7 @@ export { useMenuIsOpen } from './lib/ui/hooks/useMenuIsOpen'
 export { useReadonly } from './lib/ui/hooks/useReadonly'
 export { useRelevantStyles } from './lib/ui/hooks/useRelevantStyles'
 export {
-	onDragFromToolbarToCreateShape,
 	useTools,
-	type OnDragFromToolbarToCreateShapesOpts,
 	type TLUiToolItem,
 	type TLUiToolsContextType,
 	type TLUiToolsProviderProps,
@@ -630,7 +597,7 @@ export {
 } from './lib/ui/hooks/useTranslation/useTranslation'
 export { type TLUiIconType } from './lib/ui/icon-types'
 export { useDefaultHelpers, type TLUiOverrideHelpers, type TLUiOverrides } from './lib/ui/overrides'
-export { TldrawUi, TldrawUiInFrontOfTheCanvas, type TldrawUiProps } from './lib/ui/TldrawUi'
+export { TldrawUi, type TldrawUiProps } from './lib/ui/TldrawUi'
 export { containBoxSize, downsizeImage, type BoxWidthHeight } from './lib/utils/assets/assets'
 export { preloadFont, type TLTypeFace } from './lib/utils/assets/preload-font'
 export { getEmbedInfo, type TLEmbedResult } from './lib/utils/embeds/embeds'
@@ -704,6 +671,8 @@ export {
 
 // Patches
 export { SvgTextLabel } from './lib/shapes/shared/SvgTextLabel';
+
+export type { StrokeOptions, StrokePoint } from './lib/shapes/shared/freehand/types';
 
 //LineTool
 export { Pointing as LineToolPointing } from "./lib/shapes/line/toolStates/Pointing";

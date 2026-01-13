@@ -17,7 +17,6 @@ import {
 	Vec,
 	WeakCache,
 	exhaustiveSwitchError,
-	getColorValue,
 	getDefaultColorTheme,
 	getFontsFromRichText,
 	isEqual,
@@ -289,7 +288,7 @@ export class NoteShapeUtil extends ShapeUtil<TLNoteShape> {
 					style={{
 						width: nw,
 						height: nh,
-						backgroundColor: getColorValue(theme, color, 'noteFill'),
+						backgroundColor: theme[color].note.fill,
 						borderBottom: hideShadows
 							? isDarkMode
 								? `${2 * scale}px solid rgb(20, 20, 20)`
@@ -309,11 +308,7 @@ export class NoteShapeUtil extends ShapeUtil<TLNoteShape> {
 							verticalAlign={verticalAlign}
 							richText={richText}
 							isSelected={isSelected}
-							labelColor={
-								labelColor === 'black'
-									? getColorValue(theme, color, 'noteText')
-									: getColorValue(theme, labelColor, 'fill')
-							}
+							labelColor={labelColor === 'black' ? theme[color].note.text : theme[labelColor].fill}
 							wrap
 							padding={LABEL_PADDING * scale}
 							hasCustomTabBehavior
@@ -348,7 +343,7 @@ export class NoteShapeUtil extends ShapeUtil<TLNoteShape> {
 				align={shape.props.align}
 				verticalAlign={shape.props.verticalAlign}
 				richText={shape.props.richText}
-				labelColor={getColorValue(theme, shape.props.color, 'noteText')}
+				labelColor={theme[shape.props.color].note.text}
 				bounds={bounds}
 				padding={LABEL_PADDING}
 				showTextOutline={false}
@@ -362,7 +357,7 @@ export class NoteShapeUtil extends ShapeUtil<TLNoteShape> {
 					rx={1}
 					width={NOTE_SIZE}
 					height={bounds.h}
-					fill={getColorValue(theme, shape.props.color, 'noteFill')}
+					fill={theme[shape.props.color].note.fill}
 				/>
 				{textLabel}
 			</>

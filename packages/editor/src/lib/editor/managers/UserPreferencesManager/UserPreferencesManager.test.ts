@@ -1,15 +1,17 @@
 import { atom } from '@tldraw/state'
-import { Mocked, vi } from 'vitest'
 import { TLUserPreferences, defaultUserPreferences } from '../../../config/TLUserPreferences'
 import { TLUser } from '../../../config/createTLUser'
 import { UserPreferencesManager } from './UserPreferencesManager'
 
 // Mock window.matchMedia
-const mockMatchMedia = vi.fn()
-window.matchMedia = mockMatchMedia
+const mockMatchMedia = jest.fn()
+Object.defineProperty(window, 'matchMedia', {
+	writable: true,
+	value: mockMatchMedia,
+})
 
 describe('UserPreferencesManager', () => {
-	let mockUser: Mocked<TLUser>
+	let mockUser: jest.Mocked<TLUser>
 	let mockUserPreferences: TLUserPreferences
 	let userPreferencesAtom: any
 	let userPreferencesManager: UserPreferencesManager
@@ -23,7 +25,6 @@ describe('UserPreferencesManager', () => {
 		locale: 'en',
 		animationSpeed: 1,
 		areKeyboardShortcutsEnabled: true,
-		showUiLabels: false,
 		edgeScrollSpeed: 1,
 		colorScheme: 'light',
 		isSnapMode: false,
@@ -34,14 +35,14 @@ describe('UserPreferencesManager', () => {
 	})
 
 	beforeEach(() => {
-		vi.clearAllMocks()
+		jest.clearAllMocks()
 
 		mockUserPreferences = createMockUserPreferences()
 		userPreferencesAtom = atom('userPreferences', mockUserPreferences)
 
 		mockUser = {
 			userPreferences: userPreferencesAtom,
-			setUserPreferences: vi.fn((prefs) => {
+			setUserPreferences: jest.fn((prefs) => {
 				userPreferencesAtom.set(prefs)
 			}),
 		}
@@ -49,8 +50,8 @@ describe('UserPreferencesManager', () => {
 		// Default matchMedia mock - no dark mode preference
 		mockMatchMedia.mockReturnValue({
 			matches: false,
-			addEventListener: vi.fn(),
-			removeEventListener: vi.fn(),
+			addEventListener: jest.fn(),
+			removeEventListener: jest.fn(),
 		})
 	})
 
@@ -64,14 +65,17 @@ describe('UserPreferencesManager', () => {
 			expect(userPreferencesManager.systemColorScheme.get()).toBe('light')
 
 			// Restore matchMedia
-			window.matchMedia = mockMatchMedia
+			Object.defineProperty(window, 'matchMedia', {
+				writable: true,
+				value: mockMatchMedia,
+			})
 		})
 
 		it('should initialize with light system color scheme when dark mode not preferred', () => {
 			mockMatchMedia.mockReturnValue({
 				matches: false,
-				addEventListener: vi.fn(),
-				removeEventListener: vi.fn(),
+				addEventListener: jest.fn(),
+				removeEventListener: jest.fn(),
 			})
 
 			userPreferencesManager = new UserPreferencesManager(mockUser, false)
@@ -82,8 +86,8 @@ describe('UserPreferencesManager', () => {
 		it('should initialize with dark system color scheme when dark mode preferred', () => {
 			mockMatchMedia.mockReturnValue({
 				matches: true,
-				addEventListener: vi.fn(),
-				removeEventListener: vi.fn(),
+				addEventListener: jest.fn(),
+				removeEventListener: jest.fn(),
 			})
 
 			userPreferencesManager = new UserPreferencesManager(mockUser, false)
@@ -92,8 +96,8 @@ describe('UserPreferencesManager', () => {
 		})
 
 		it('should set up media query listener for color scheme changes', () => {
-			const mockAddEventListener = vi.fn()
-			const mockRemoveEventListener = vi.fn()
+			const mockAddEventListener = jest.fn()
+			const mockRemoveEventListener = jest.fn()
 
 			mockMatchMedia.mockReturnValue({
 				matches: false,
@@ -107,7 +111,7 @@ describe('UserPreferencesManager', () => {
 		})
 
 		it('should handle media query change events', () => {
-			const mockAddEventListener = vi.fn()
+			const mockAddEventListener = jest.fn()
 			let changeHandler: (e: MediaQueryListEvent) => void
 
 			mockMatchMedia.mockReturnValue({
@@ -118,7 +122,7 @@ describe('UserPreferencesManager', () => {
 					}
 					mockAddEventListener(event, handler)
 				},
-				removeEventListener: vi.fn(),
+				removeEventListener: jest.fn(),
 			})
 
 			userPreferencesManager = new UserPreferencesManager(mockUser, false)
@@ -148,11 +152,11 @@ describe('UserPreferencesManager', () => {
 
 	describe('dispose', () => {
 		it('should remove media query listener on dispose', () => {
-			const mockRemoveEventListener = vi.fn()
+			const mockRemoveEventListener = jest.fn()
 
 			mockMatchMedia.mockReturnValue({
 				matches: false,
-				addEventListener: vi.fn(),
+				addEventListener: jest.fn(),
 				removeEventListener: mockRemoveEventListener,
 			})
 
@@ -165,8 +169,8 @@ describe('UserPreferencesManager', () => {
 		it('should call all disposables', () => {
 			userPreferencesManager = new UserPreferencesManager(mockUser, false)
 
-			const mockDisposable1 = vi.fn()
-			const mockDisposable2 = vi.fn()
+			const mockDisposable1 = jest.fn()
+			const mockDisposable2 = jest.fn()
 
 			userPreferencesManager.disposables.add(mockDisposable1)
 			userPreferencesManager.disposables.add(mockDisposable2)
@@ -227,7 +231,6 @@ describe('UserPreferencesManager', () => {
 				color: mockUserPreferences.color,
 				animationSpeed: mockUserPreferences.animationSpeed,
 				areKeyboardShortcutsEnabled: mockUserPreferences.areKeyboardShortcutsEnabled,
-				showUiLabels: mockUserPreferences.showUiLabels,
 				isSnapMode: mockUserPreferences.isSnapMode,
 				colorScheme: mockUserPreferences.colorScheme,
 				isDarkMode: false, // light mode
@@ -373,17 +376,6 @@ describe('UserPreferencesManager', () => {
 				expect(userPreferencesManager.getAreKeyboardShortcutsEnabled()).toBe(
 					defaultUserPreferences.areKeyboardShortcutsEnabled
 				)
-			})
-		})
-
-		describe('getShowUiLabels', () => {
-			it('should return user show ui labels setting', () => {
-				expect(userPreferencesManager.getShowUiLabels()).toBe(mockUserPreferences.showUiLabels)
-			})
-
-			it('should return default show ui labels when null', () => {
-				userPreferencesAtom.set({ ...mockUserPreferences, showUiLabels: null })
-				expect(userPreferencesManager.getShowUiLabels()).toBe(defaultUserPreferences.showUiLabels)
 			})
 		})
 

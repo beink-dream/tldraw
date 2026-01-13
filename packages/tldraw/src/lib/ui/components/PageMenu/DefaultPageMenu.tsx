@@ -24,7 +24,6 @@ import {
 	TldrawUiPopoverContent,
 	TldrawUiPopoverTrigger,
 } from '../primitives/TldrawUiPopover'
-import { TldrawUiRow } from '../primitives/layout'
 import { PageItemInput } from './PageItemInput'
 import { PageItemSubmenu } from './PageItemSubmenu'
 import { onMovePage } from './edit-pages-shared'
@@ -330,7 +329,7 @@ export const DefaultPageMenu = memo(function DefaultPageMenu() {
 					<div className="tlui-page-menu__header">
 						<div className="tlui-page-menu__header__title">{msg('page-menu.title')}</div>
 						{!isReadonlyMode && (
-							<TldrawUiRow>
+							<div className="tlui-buttons__horizontal">
 								<TldrawUiButton
 									type="icon"
 									data-testid="page-menu.edit"
@@ -352,7 +351,7 @@ export const DefaultPageMenu = memo(function DefaultPageMenu() {
 								>
 									<TldrawUiButtonIcon icon="plus" />
 								</TldrawUiButton>
-							</TldrawUiRow>
+							</div>
 						)}
 					</div>
 					<div

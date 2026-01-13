@@ -1,5 +1,4 @@
 import { TLArrowShape, createShapeId } from '@tldraw/editor'
-import { vi } from 'vitest'
 import { TestEditor } from '../../../test/TestEditor'
 import { ArrowShapeUtil } from './ArrowShapeUtil'
 import { updateArrowTargetState } from './arrowTargetState'
@@ -13,7 +12,7 @@ const ids = {
 	arrow1: createShapeId('arrow1'),
 }
 
-vi.useFakeTimers()
+jest.useFakeTimers()
 
 window.requestAnimationFrame = function requestAnimationFrame(cb) {
 	return setTimeout(cb, 1000 / 60)

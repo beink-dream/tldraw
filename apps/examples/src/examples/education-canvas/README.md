@@ -1,5 +1,5 @@
 ---
-title: Education canvas
+title: Education Canvas
 component: ./EducationCanvasExample.tsx
 category: use-cases
 priority: 1

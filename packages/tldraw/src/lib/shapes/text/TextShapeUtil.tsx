@@ -11,7 +11,6 @@ import {
 	TLTextShape,
 	Vec,
 	createComputedCache,
-	getColorValue,
 	getDefaultColorTheme,
 	getFontsFromRichText,
 	isEqual,
@@ -136,7 +135,7 @@ export class TextShapeUtil extends ShapeUtil<TLTextShape> {
 				align={textAlign}
 				verticalAlign="middle"
 				richText={richText}
-				labelColor={getColorValue(theme, color, 'solid')}
+				labelColor={theme[color].solid}
 				isSelected={isSelected}
 				textWidth={width}
 				textHeight={height}
@@ -172,7 +171,7 @@ export class TextShapeUtil extends ShapeUtil<TLTextShape> {
 				align={shape.props.textAlign}
 				verticalAlign="middle"
 				richText={shape.props.richText}
-				labelColor={getColorValue(theme, shape.props.color, 'solid')}
+				labelColor={theme[shape.props.color].solid}
 				bounds={exportBounds}
 				padding={0}
 			/>

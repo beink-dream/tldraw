@@ -54,7 +54,6 @@ export default defineConfig(({ mode }) => ({
 		outDir: path.join(__dirname, 'dist'),
 		assetsInlineLimit: 0,
 		target: 'es2022',
-		minify: false,
 	},
 	esbuild: {
 		target: 'es2022',

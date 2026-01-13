@@ -1,9 +1,8 @@
 import { TLDrawShape, TLHighlightShape, last } from '@tldraw/editor'
-import { vi } from 'vitest'
 import { TestEditor } from './TestEditor'
 import { TEST_DRAW_SHAPE_SCREEN_POINTS } from './drawing.data'
 
-vi.useFakeTimers()
+jest.useFakeTimers()
 
 let editor: TestEditor
 

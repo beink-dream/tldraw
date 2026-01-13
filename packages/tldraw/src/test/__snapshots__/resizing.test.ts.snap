@@ -1,6 +1,6 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`When resizing a shape with children > Resizes a rotated draw shape > draw shape after rotating 1`] = `
+exports[`When resizing a shape with children Resizes a rotated draw shape: draw shape after rotating 1`] = `
 {
   "id": "shape:lineA",
   "index": "a3",

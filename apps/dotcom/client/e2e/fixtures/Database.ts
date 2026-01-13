@@ -37,7 +37,6 @@ const defaultUser = {
 	isWrapMode: null,
 	isDynamicSizeMode: null,
 	isPasteAtCursorMode: null,
-	showUiLabels: null,
 }
 
 export class Database {
