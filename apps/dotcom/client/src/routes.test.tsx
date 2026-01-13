@@ -1,35 +1,32 @@
+import { expect } from '@jest/globals'
+import type { MatcherFunction } from 'expect'
 import { join } from 'path'
 import { ReactElement } from 'react'
 import { Route, RouteObject, createRoutesFromElements } from 'react-router-dom'
-import 'vitest'
 import { router } from './routes'
 
-declare module 'vitest' {
-	interface Assertion<T = any> {
-		toMatchAny(regexes: string[]): T
-	}
-	interface AsymmetricMatchersContaining {
-		toMatchAny(regexes: string[]): any
-	}
-}
-
-function toMatchAny(received: string, regexes: string[]) {
+const toMatchAny: MatcherFunction<[regexes: unknown]> = function (actual, regexes) {
 	if (
-		typeof received !== 'string' ||
+		typeof actual !== 'string' ||
 		!Array.isArray(regexes) ||
 		regexes.some((regex) => typeof regex !== 'string')
 	) {
 		throw new Error('toMatchAny takes a string and an array of strings')
 	}
 
-	const pass = regexes.map((regex) => new RegExp(regex)).some((regex) => received.match(regex))
-
-	return {
-		pass,
-		message: () =>
-			pass
-				? `expected ${received} not to match any of the regexes ${regexes}`
-				: `expected ${received} to match at least one of the regexes ${regexes}`,
+	const pass = regexes.map((regex) => new RegExp(regex)).some((regex) => actual.match(regex))
+	if (pass) {
+		return {
+			message: () =>
+				`expected ${this.utils.printReceived(actual)} not to match any of the regexes ${this.utils.printExpected(regexes)}`,
+			pass: true,
+		}
+	} else {
+		return {
+			message: () =>
+				`expected ${this.utils.printReceived(actual)} to match at least one of the regexes ${this.utils.printExpected(regexes)}`,
+			pass: false,
+		}
 	}
 }
 
@@ -137,16 +134,16 @@ test('convertReactToVercel', () => {
 	expect(() =>
 		convertReactToVercel('/r/:roomId/history?/:timestamp')
 	).toThrowErrorMatchingInlineSnapshot(
-		`[Error: Optional route segments like in '/r/:roomId/history?/:timestamp' are not supported yet (you can add this)]`
+		`"Optional route segments like in '/r/:roomId/history?/:timestamp' are not supported yet (you can add this)"`
 	)
 	expect(() => convertReactToVercel('/r/:roomId/history/*')).toThrowErrorMatchingInlineSnapshot(
-		`[Error: Wildcard routes like '/r/:roomId/history/*' are not supported yet (you can add support!)]`
+		`"Wildcard routes like '/r/:roomId/history/*' are not supported yet (you can add support!)"`
 	)
 	expect(() => convertReactToVercel('/r/foo:roomId/history')).toThrowErrorMatchingInlineSnapshot(
-		`[Error: Colons in route segments must be immediately preceded by a slash in '/r/foo:roomId/history']`
+		`"Colons in route segments must be immediately preceded by a slash in '/r/foo:roomId/history'"`
 	)
 	expect(() => convertReactToVercel('r/:roomId/history')).toThrowErrorMatchingInlineSnapshot(
-		`[Error: Route paths must start with a slash, but 'r/:roomId/history' does not]`
+		`"Route paths must start with a slash, but 'r/:roomId/history' does not"`
 	)
 })
 

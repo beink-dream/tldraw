@@ -5,10 +5,8 @@ import {
 	CreateFilesResponseBody,
 	createMutators,
 	CreateSnapshotRequestBody,
-	FILE_PREFIX,
 	LOCAL_FILE_PREFIX,
 	MAX_NUMBER_OF_FILES,
-	ROOM_PREFIX,
 	TlaFile,
 	TlaFileState,
 	TlaMutators,
@@ -93,9 +91,6 @@ export class TldrawApp {
 
 	changes: Map<Atom<any, unknown>, any> = new Map()
 	changesFlushed = null as null | ReturnType<typeof promiseWithResolve>
-
-	// Track new room creation timestamps and sources
-	private newRoomCreationStartTimes: Map<string, { startTime: number; source: string }> = new Map()
 
 	private signalizeQuery<TReturn>(name: string, query: any): Signal<TReturn> {
 		// fail if closed?
@@ -396,7 +391,6 @@ export class TldrawApp {
 			return Result.err('max number of files reached')
 		}
 
-		const creationStartTime = Date.now()
 		const file: TlaFile = {
 			id: typeof fileOrId === 'string' ? fileOrId : uniqueId(),
 			ownerId: this.userId,
@@ -404,15 +398,15 @@ export class TldrawApp {
 			ownerAvatar: this.getUser().avatar,
 			ownerName: this.getUser().name,
 			isEmpty: true,
-			createdAt: creationStartTime,
+			createdAt: Date.now(),
 			lastPublished: 0,
-			name: this.getFallbackFileName(creationStartTime),
+			name: this.getFallbackFileName(Date.now()),
 			published: false,
 			publishedSlug: uniqueId(),
 			shared: true,
 			sharedLinkType: 'edit',
 			thumbnail: '',
-			updatedAt: creationStartTime,
+			updatedAt: Date.now(),
 			isDeleted: false,
 			createSource: null,
 		}
@@ -432,8 +426,6 @@ export class TldrawApp {
 			lastSessionState: null,
 			lastVisitAt: null,
 		}
-		this.storeNewRoomCreationTracking(file.id, file.createSource, creationStartTime)
-
 		this.z.mutate.file.insertWithFileState({ file, fileState })
 		// todo: add server error handling for real Zero
 		// .server.catch((res: { error: string; details: string }) => {
@@ -443,48 +435,6 @@ export class TldrawApp {
 		// })
 
 		return Result.ok({ file })
-	}
-
-	/**
-	 * Get and remove the creation start time and source for a file (used for tracking new room creation duration)
-	 */
-	getAndClearNewRoomCreationStartTime(
-		fileId: string
-	): { startTime: number; source: string } | null {
-		const creationData = this.newRoomCreationStartTimes.get(fileId) ?? null
-		if (creationData !== null) {
-			this.newRoomCreationStartTimes.delete(fileId)
-		}
-		return creationData
-	}
-
-	/**
-	 * Store new room creation timing data with analytics-friendly source mapping
-	 */
-	private storeNewRoomCreationTracking(
-		fileId: string,
-		createSource: string | null,
-		startTime: number
-	): void {
-		let analyticsSource: string
-
-		if (!createSource) {
-			analyticsSource = 'create-blank-file' // Default for button clicks
-		} else if (createSource.startsWith(`${LOCAL_FILE_PREFIX}/`)) {
-			analyticsSource = 'slurp'
-		} else if (createSource.startsWith(`${FILE_PREFIX}/`)) {
-			analyticsSource = 'duplicate'
-		} else if (createSource.startsWith(`${ROOM_PREFIX}/`)) {
-			analyticsSource = 'legacy-import'
-		} else {
-			analyticsSource = 'other'
-		}
-
-		// Store the creation start time and source for tracking
-		this.newRoomCreationStartTimes.set(fileId, {
-			startTime,
-			source: analyticsSource,
-		})
 	}
 
 	getFallbackFileName(time: number) {
@@ -759,7 +709,6 @@ export class TldrawApp {
 			isWrapMode: restOfPreferences.isWrapMode ?? null,
 			isDynamicSizeMode: restOfPreferences.isDynamicSizeMode ?? null,
 			isPasteAtCursorMode: restOfPreferences.isPasteAtCursorMode ?? null,
-			showUiLabels: restOfPreferences.showUiLabels ?? null,
 		})
 		if (didCreate) {
 			opts.trackEvent('create-user', { source: 'app' })

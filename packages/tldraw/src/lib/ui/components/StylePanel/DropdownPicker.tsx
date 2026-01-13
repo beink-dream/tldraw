@@ -1,4 +1,5 @@
 import { SharedStyle, StyleProp, tlmenus, useEditor } from '@tldraw/editor'
+import classNames from 'classnames'
 import * as React from 'react'
 import { StyleValuesForUi } from '../../../styles'
 import { TLUiTranslationKey } from '../../hooks/useTranslation/TLUiTranslationKey'
@@ -56,12 +57,7 @@ function DropdownPickerInner<T extends string>({
 
 	const popoverId = `style panel ${id}`
 	return (
-		<TldrawUiPopover
-			id={popoverId}
-			open={isOpen}
-			onOpenChange={setIsOpen}
-			className="tlui-style-panel__dropdown-picker"
-		>
+		<TldrawUiPopover id={popoverId} open={isOpen} onOpenChange={setIsOpen}>
 			<TldrawUiPopoverTrigger>
 				<TldrawUiToolbarButton
 					type={type}
@@ -74,7 +70,10 @@ function DropdownPickerInner<T extends string>({
 				</TldrawUiToolbarButton>
 			</TldrawUiPopoverTrigger>
 			<TldrawUiPopoverContent side="left" align="center">
-				<TldrawUiToolbar orientation={items.length > 4 ? 'grid' : 'horizontal'} label={labelStr}>
+				<TldrawUiToolbar
+					label={labelStr}
+					className={classNames('tlui-buttons__grid', `tlui-buttons__${stylePanelType}`)}
+				>
 					<TldrawUiMenuContextProvider type="icons" sourceId="style-panel">
 						{items.map((item) => {
 							return (

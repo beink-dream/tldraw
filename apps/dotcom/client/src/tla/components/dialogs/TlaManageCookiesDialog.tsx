@@ -4,8 +4,9 @@ import {
 	TldrawUiDialogCloseButton,
 	TldrawUiDialogHeader,
 	TldrawUiDialogTitle,
+	useValue,
 } from 'tldraw'
-import { useAnalyticsConsent } from '../../hooks/useAnalyticsConsent'
+import { useApp } from '../../hooks/useAppState'
 import { F } from '../../utils/i18n'
 import {
 	TlaMenuControl,
@@ -19,7 +20,8 @@ import styles from './dialogs.module.css'
 const COOKIE_POLICY_URL = 'https://tldraw.notion.site/cookie-policy'
 
 export function TlaManageCookiesDialog() {
-	const [consent, updateConsent] = useAnalyticsConsent()
+	const app = useApp()
+	const user = useValue('user', () => app.getUser(), [app])
 
 	return (
 		<_Tooltip.Provider>
@@ -48,7 +50,7 @@ export function TlaManageCookiesDialog() {
 							<TlaMenuControlLabel>
 								<F defaultMessage="Essential cookies" />
 							</TlaMenuControlLabel>
-							<TlaMenuControlInfoTooltip showOnMobile>
+							<TlaMenuControlInfoTooltip>
 								<F defaultMessage="We use these cookies to save your files and settings." />
 							</TlaMenuControlInfoTooltip>
 							<TlaMenuSwitch checked={true} disabled />
@@ -57,12 +59,14 @@ export function TlaManageCookiesDialog() {
 							<TlaMenuControlLabel>
 								<F defaultMessage="Analytics" />
 							</TlaMenuControlLabel>
-							<TlaMenuControlInfoTooltip showOnMobile>
+							<TlaMenuControlInfoTooltip>
 								<F defaultMessage="We use analytics cookies to make tldraw better." />
 							</TlaMenuControlInfoTooltip>
 							<TlaMenuSwitch
-								checked={consent === true}
-								onChange={() => updateConsent(!(consent === true))}
+								checked={!!app.getUser().allowAnalyticsCookie}
+								onChange={() => {
+									app.updateUser({ id: user.id, allowAnalyticsCookie: !user.allowAnalyticsCookie })
+								}}
 							/>
 						</TlaMenuControl>
 					</TlaMenuControlGroup>

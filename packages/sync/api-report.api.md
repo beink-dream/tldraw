@@ -39,7 +39,6 @@ export interface UseSyncDemoOptions {
 export interface UseSyncOptions {
     assets: TLAssetStore;
     getUserPresence?(store: TLStore, user: TLPresenceUserInfo): null | TLPresenceStateInfo;
-    onCustomMessageReceived?(data: any): void;
     // @internal (undocumented)
     onMount?(editor: Editor): void;
     // @internal

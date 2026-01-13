@@ -33,7 +33,6 @@ import { TlaIcon } from '../TlaIcon/TlaIcon'
 import { TlaLogo } from '../TlaLogo/TlaLogo'
 import { sidebarMessages } from '../TlaSidebar/components/TlaSidebarFileLink'
 import {
-	CookieConsentMenuItem,
 	GiveUsFeedbackMenuItem,
 	LegalSummaryMenuItem,
 	UserManualMenuItem,
@@ -138,7 +137,6 @@ export function TlaEditorTopLeftPanelAnonymous() {
 							<UserManualMenuItem />
 							<GiveUsFeedbackMenuItem />
 							<LegalSummaryMenuItem />
-							<CookieConsentMenuItem />
 						</TldrawUiMenuGroup>
 						{!app && (
 							<TldrawUiMenuGroup id="signin">

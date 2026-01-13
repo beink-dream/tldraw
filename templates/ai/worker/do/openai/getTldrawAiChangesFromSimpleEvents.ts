@@ -9,7 +9,6 @@ import {
 	IndexKey,
 	TLArrowBinding,
 	TLArrowShape,
-	TLDefaultColorStyle,
 	TLDefaultFillStyle,
 	TLGeoShape,
 	TLLineShape,
@@ -88,7 +87,7 @@ function getTldrawAiChangesFromSimpleCreateOrUpdateEvent(
 					y: shape.y,
 					props: {
 						richText: toRichTextIfNeeded(shape.text ?? ''),
-						color: (shape.color ?? 'black') as TLDefaultColorStyle,
+						color: shape.color ?? 'black',
 						textAlign: shape.textAlign ?? 'middle',
 					},
 				},
@@ -122,7 +121,7 @@ function getTldrawAiChangesFromSimpleCreateOrUpdateEvent(
 								y: shape.y2 - minY,
 							},
 						},
-						color: (shape.color ?? 'black') as TLDefaultColorStyle,
+						color: shape.color ?? 'black',
 					},
 				},
 			} satisfies TLAiCreateShapeChange<TLLineShape> | TLAiUpdateShapeChange<TLLineShape>)
@@ -142,7 +141,7 @@ function getTldrawAiChangesFromSimpleCreateOrUpdateEvent(
 					y: 0,
 					props: {
 						color: shape.color ?? 'black',
-						richText: toRichTextIfNeeded(shape.text ?? ''),
+						text: shape.text ?? '',
 						start: { x: x1, y: y1 },
 						end: { x: x2, y: y2 },
 					},

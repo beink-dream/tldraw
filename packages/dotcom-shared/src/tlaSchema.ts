@@ -39,7 +39,6 @@ export const user = table('user')
 		isWrapMode: boolean().optional(),
 		isDynamicSizeMode: boolean().optional(),
 		isPasteAtCursorMode: boolean().optional(),
-		showUiLabels: boolean().optional(),
 		allowAnalyticsCookie: boolean().optional(),
 	})
 	.primaryKey('id')

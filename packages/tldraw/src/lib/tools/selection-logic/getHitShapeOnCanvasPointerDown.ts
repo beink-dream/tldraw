@@ -1,6 +1,5 @@
 import { Editor, TLShape } from '@tldraw/editor'
 
-/** @public */
 export function getHitShapeOnCanvasPointerDown(
 	editor: Editor,
 	hitLabels = false

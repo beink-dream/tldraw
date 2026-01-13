@@ -47,7 +47,7 @@
 	content: '';
 	position: absolute;
 	inset: 0px;
-	background-color: var(--tl-color-background);
+	background-color: var(--color-background);
 	border-radius: 8px;
 	z-index: 1;
 }

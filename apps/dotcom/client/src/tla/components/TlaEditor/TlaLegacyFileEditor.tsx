@@ -10,7 +10,6 @@ import { Editor, TLComponents, Tldraw } from 'tldraw'
 import { StoreErrorScreen } from '../../../components/StoreErrorScreen'
 import { ThemeUpdater } from '../../../components/ThemeUpdater/ThemeUpdater'
 import { useLegacyUrlParams } from '../../../hooks/useLegacyUrlParams'
-import { useRoomLoadTracking } from '../../../hooks/useRoomLoadTracking'
 import { trackEvent, useHandleUiEvents } from '../../../utils/analytics'
 import { assetUrls } from '../../../utils/assetUrls'
 import { MULTIPLAYER_SERVER } from '../../../utils/config'
@@ -86,11 +85,8 @@ function TlaEditorInner({
 	const isReadonly =
 		roomOpenMode === ROOM_OPEN_MODE.READ_ONLY || roomOpenMode === ROOM_OPEN_MODE.READ_ONLY_LEGACY
 
-	const trackRoomLoaded = useRoomLoadTracking()
-
 	const handleMount = useCallback(
 		(editor: Editor) => {
-			trackRoomLoaded(editor)
 			if (!isReadonly) {
 				;(window as any).app = editor
 				;(window as any).editor = editor
@@ -100,7 +96,7 @@ function TlaEditorInner({
 			editor.registerExternalAssetHandler('url', createAssetFromUrl)
 			setIsReady()
 		},
-		[isReadonly, trackRoomLoaded, setIsReady]
+		[isReadonly, setIsReady]
 	)
 
 	if (storeWithStatus.error) {

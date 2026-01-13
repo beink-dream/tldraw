@@ -1,6 +1,5 @@
 import { createMigrationSequence } from '@tldraw/store'
 import { T } from '@tldraw/validate'
-import { TLRichText, richTextValidator, toRichText } from '../misc/TLRichText'
 import { VecModel, vecModelValidator } from '../misc/geometry-types'
 import { createBindingId } from '../records/TLBinding'
 import { TLShapeId, createShapePropsMigrationIds } from '../records/TLShape'
@@ -68,7 +67,7 @@ export interface TLArrowShapeProps {
 	start: VecModel
 	end: VecModel
 	bend: number
-	richText: TLRichText
+	text: string
 	labelPosition: number
 	scale: number
 	elbowMidPoint: number
@@ -91,7 +90,7 @@ export const arrowShapeProps: RecordProps<TLArrowShape> = {
 	start: vecModelValidator,
 	end: vecModelValidator,
 	bend: T.number,
-	richText: richTextValidator,
+	text: T.string,
 	labelPosition: T.number,
 	scale: T.nonZeroNumber,
 	elbowMidPoint: T.number,
@@ -105,7 +104,6 @@ export const arrowShapeVersions = createShapePropsMigrationIds('arrow', {
 	ExtractBindings: 4,
 	AddScale: 5,
 	AddElbow: 6,
-	AddRichText: 7,
 })
 
 function propsMigration(migration: TLPropsMigration) {
@@ -255,17 +253,6 @@ export const arrowShapeMigrations = createMigrationSequence({
 				delete props.kind
 				delete props.elbowMidPoint
 			},
-		}),
-		propsMigration({
-			id: arrowShapeVersions.AddRichText,
-			up: (props) => {
-				props.richText = toRichText(props.text)
-				delete props.text
-			},
-			// N.B. Explicitly no down state so that we force clients to update.
-			// down: (props) => {
-			// 	delete props.richText
-			// },
 		}),
 	],
 })

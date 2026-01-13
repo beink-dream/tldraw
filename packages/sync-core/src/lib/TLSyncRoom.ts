@@ -1,6 +1,5 @@
-import { transact, transaction } from '@tldraw/state'
+import { Atom, atom, transaction } from '@tldraw/state'
 import {
-	AtomMap,
 	IdOf,
 	MigrationFailureReason,
 	RecordType,
@@ -19,7 +18,8 @@ import {
 	hasOwnProperty,
 	isEqual,
 	isNativeStructuredClone,
-	objectMapEntriesIterable,
+	objectMapEntries,
+	objectMapKeys,
 	structuredClone,
 } from '@tldraw/utils'
 import { createNanoEvents } from 'nanoevents'
@@ -41,7 +41,6 @@ import {
 	applyObjectDiff,
 	diffRecord,
 } from './diff'
-import { findMin } from './findMin'
 import { interval } from './interval'
 import {
 	TLIncompatibilityReason,
@@ -69,6 +68,8 @@ const timeSince = (time: number) => Date.now() - time
 
 /** @internal */
 export class DocumentState<R extends UnknownRecord> {
+	_atom: Atom<{ state: R; lastChangedClock: number }>
+
 	static createWithoutValidating<R extends UnknownRecord>(
 		state: R,
 		lastChangedClock: number,
@@ -91,12 +92,21 @@ export class DocumentState<R extends UnknownRecord> {
 	}
 
 	private constructor(
-		public readonly state: R,
-		public readonly lastChangedClock: number,
+		state: R,
+		lastChangedClock: number,
 		private readonly recordType: RecordType<R, any>
-	) {}
-
-	replaceState(state: R, clock: number): Result<[ObjectDiff, DocumentState<R>] | null, Error> {
+	) {
+		this._atom = atom('document:' + state.id, { state, lastChangedClock })
+	}
+	// eslint-disable-next-line no-restricted-syntax
+	get state() {
+		return this._atom.get().state
+	}
+	// eslint-disable-next-line no-restricted-syntax
+	get lastChangedClock() {
+		return this._atom.get().lastChangedClock
+	}
+	replaceState(state: R, clock: number): Result<ObjectDiff | null, Error> {
 		const diff = diffRecord(this.state, state)
 		if (!diff) return Result.ok(null)
 		try {
@@ -104,9 +114,10 @@ export class DocumentState<R extends UnknownRecord> {
 		} catch (error: any) {
 			return Result.err(error)
 		}
-		return Result.ok([diff, new DocumentState(state, clock, this.recordType)])
+		this._atom.set({ state, lastChangedClock: clock })
+		return Result.ok(diff)
 	}
-	mergeDiff(diff: ObjectDiff, clock: number): Result<[ObjectDiff, DocumentState<R>] | null, Error> {
+	mergeDiff(diff: ObjectDiff, clock: number): Result<ObjectDiff | null, Error> {
 		const newState = applyObjectDiff(this.state, diff)
 		return this.replaceState(newState, clock)
 	}
@@ -115,25 +126,9 @@ export class DocumentState<R extends UnknownRecord> {
 /** @public */
 export interface RoomSnapshot {
 	clock: number
-	documentClock?: number
 	documents: Array<{ state: UnknownRecord; lastChangedClock: number }>
 	tombstones?: Record<string, number>
-	tombstoneHistoryStartsAtClock?: number
 	schema?: SerializedSchema
-}
-
-function getDocumentClock(snapshot: RoomSnapshot) {
-	if (typeof snapshot.documentClock === 'number') {
-		return snapshot.documentClock
-	}
-	let max = 0
-	for (const doc of snapshot.documents) {
-		max = Math.max(max, doc.lastChangedClock)
-	}
-	for (const tombstone of Object.values(snapshot.tombstones ?? {})) {
-		max = Math.max(max, tombstone)
-	}
-	return max
 }
 
 /**
@@ -202,15 +197,20 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 
 	// Values associated with each uid (must be serializable).
 	/** @internal */
-	documents: AtomMap<string, DocumentState<R>>
-	tombstones: AtomMap<string, number>
+	state = atom<{
+		documents: Record<string, DocumentState<R>>
+		tombstones: Record<string, number>
+	}>('room state', {
+		documents: {},
+		tombstones: {},
+	})
 
 	// this clock should start higher than the client, to make sure that clients who sync with their
 	// initial lastServerClock value get the full state
 	// in this case clients will start with 0, and the server will start with 1
-	clock: number
-	documentClock: number
-	tombstoneHistoryStartsAtClock: number
+	clock = 1
+	documentClock = 1
+	tombstoneHistoryStartsAtClock = this.clock
 	// map from record id to clock upon deletion
 
 	readonly serializedSchema: SerializedSchema
@@ -265,7 +265,6 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 		if (!snapshot) {
 			snapshot = {
 				clock: 0,
-				documentClock: 0,
 				documents: [
 					{
 						state: DocumentRecordType.create({ id: TLDOCUMENT_ID }),
@@ -280,7 +279,6 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 		}
 
 		this.clock = snapshot.clock
-
 		let didIncrementClock = false
 		const ensureClockDidIncrement = (_reason: string) => {
 			if (!didIncrementClock) {
@@ -289,139 +287,104 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 			}
 		}
 
-		this.tombstones = new AtomMap(
-			'room tombstones',
-			objectMapEntriesIterable(snapshot.tombstones ?? {})
-		)
-		this.documents = new AtomMap(
-			'room documents',
-			function* (this: TLSyncRoom<R, SessionMeta>) {
-				for (const doc of snapshot.documents) {
-					if (this.documentTypes.has(doc.state.typeName)) {
-						yield [
-							doc.state.id,
-							DocumentState.createWithoutValidating<R>(
-								doc.state as R,
-								doc.lastChangedClock,
-								assertExists(getOwnProperty(this.schema.types, doc.state.typeName))
-							),
-						] as const
-					} else {
-						ensureClockDidIncrement('doc type was not doc type')
-						this.tombstones.set(doc.state.id, this.clock)
-					}
-				}
-			}.call(this)
-		)
-
-		this.tombstoneHistoryStartsAtClock =
-			snapshot.tombstoneHistoryStartsAtClock ?? findMin(this.tombstones.values()) ?? this.clock
-
-		if (this.tombstoneHistoryStartsAtClock === 0) {
-			// Before this comment was added, new clients would send '0' as their 'lastServerClock'
-			// which was technically an error because clocks start at 0, but the error didn't manifest
-			// because we initialized tombstoneHistoryStartsAtClock to 1 and then never updated it.
-			// Now that we handle tombstoneHistoryStartsAtClock properly we need to increment it here to make sure old
-			// clients still get data when they connect. This if clause can be deleted after a few months.
-			this.tombstoneHistoryStartsAtClock++
+		const tombstones = { ...snapshot.tombstones }
+		const filteredDocuments = []
+		for (const doc of snapshot.documents) {
+			if (this.documentTypes.has(doc.state.typeName)) {
+				filteredDocuments.push(doc)
+			} else {
+				ensureClockDidIncrement('doc type was not doc type')
+				tombstones[doc.state.id] = this.clock
+			}
 		}
 
-		transact(() => {
+		const documents: Record<string, DocumentState<R>> = Object.fromEntries(
+			filteredDocuments.map((r) => [
+				r.state.id,
+				DocumentState.createWithoutValidating<R>(
+					r.state as R,
+					r.lastChangedClock,
+					assertExists(getOwnProperty(this.schema.types, r.state.typeName))
+				),
+			])
+		)
+
+		const migrationResult = this.schema.migrateStoreSnapshot({
+			store: Object.fromEntries(
+				objectMapEntries(documents).map(([id, { state }]) => [id, state as R])
+			) as Record<IdOf<R>, R>,
 			// eslint-disable-next-line @typescript-eslint/no-deprecated
-			const schema = snapshot.schema ?? this.schema.serializeEarliestVersion()
-
-			const migrationsToApply = this.schema.getMigrationsSince(schema)
-			assert(migrationsToApply.ok, 'Failed to get migrations')
-
-			if (migrationsToApply.value.length > 0) {
-				// only bother allocating a snapshot if there are migrations to apply
-				const store = {} as Record<IdOf<R>, R>
-				for (const [k, v] of this.documents.entries()) {
-					store[k as IdOf<R>] = v.state
-				}
-
-				const migrationResult = this.schema.migrateStoreSnapshot(
-					{ store, schema },
-					{ mutateInputStore: true }
-				)
-
-				if (migrationResult.type === 'error') {
-					// TODO: Fault tolerance
-					throw new Error('Failed to migrate: ' + migrationResult.reason)
-				}
-
-				// use for..in to iterate over the keys of the object because it consumes less memory than
-				// Object.entries
-				for (const id in migrationResult.value) {
-					if (!Object.prototype.hasOwnProperty.call(migrationResult.value, id)) {
-						continue
-					}
-					const r = migrationResult.value[id as keyof typeof migrationResult.value]
-					const existing = this.documents.get(id)
-					if (!existing || !isEqual(existing.state, r)) {
-						// record was added or updated during migration
-						ensureClockDidIncrement('record was added or updated during migration')
-						this.documents.set(
-							r.id,
-							DocumentState.createWithoutValidating(
-								r,
-								this.clock,
-								assertExists(getOwnProperty(this.schema.types, r.typeName)) as any
-							)
-						)
-					}
-				}
-
-				for (const id of this.documents.keys()) {
-					if (!migrationResult.value[id as keyof typeof migrationResult.value]) {
-						// record was removed during migration
-						ensureClockDidIncrement('record was removed during migration')
-						this.tombstones.set(id, this.clock)
-						this.documents.delete(id)
-					}
-				}
-			}
-
-			this.pruneTombstones()
+			schema: snapshot.schema ?? this.schema.serializeEarliestVersion(),
 		})
 
+		if (migrationResult.type === 'error') {
+			// TODO: Fault tolerance
+			throw new Error('Failed to migrate: ' + migrationResult.reason)
+		}
+
+		for (const [id, r] of objectMapEntries(migrationResult.value)) {
+			const existing = documents[id]
+			if (!existing) {
+				// record was added during migration
+				ensureClockDidIncrement('record was added during migration')
+				documents[id] = DocumentState.createWithoutValidating(
+					r,
+					this.clock,
+					assertExists(getOwnProperty(this.schema.types, r.typeName)) as any
+				)
+			} else if (!isEqual(existing.state, r)) {
+				// record was maybe updated during migration
+				ensureClockDidIncrement('record was maybe updated during migration')
+				existing.replaceState(r, this.clock)
+			}
+		}
+
+		for (const id of objectMapKeys(documents)) {
+			if (!migrationResult.value[id as keyof typeof migrationResult.value]) {
+				// record was removed during migration
+				ensureClockDidIncrement('record was removed during migration')
+				tombstones[id] = this.clock
+				delete documents[id]
+			}
+		}
+
+		this.state.set({ documents, tombstones })
+
+		this.pruneTombstones()
+		this.documentClock = this.clock
 		if (didIncrementClock) {
-			this.documentClock = this.clock
 			opts.onDataChange?.()
-		} else {
-			this.documentClock = getDocumentClock(snapshot)
 		}
 	}
 
-	private didSchedulePrune = true
 	// eslint-disable-next-line local/prefer-class-methods
 	private pruneTombstones = () => {
-		this.didSchedulePrune = false
 		// avoid blocking any pending responses
-		if (this.tombstones.size > MAX_TOMBSTONES) {
-			const entries = Array.from(this.tombstones.entries())
-			// sort entries in ascending order by clock
-			entries.sort((a, b) => a[1] - b[1])
-			let idx = entries.length - 1 - MAX_TOMBSTONES + TOMBSTONE_PRUNE_BUFFER_SIZE
-			const cullClock = entries[idx++][1]
-			while (idx < entries.length && entries[idx][1] === cullClock) {
-				idx++
+		this.state.update(({ tombstones, documents }) => {
+			const entries = Object.entries(this.state.get().tombstones)
+			if (entries.length > MAX_TOMBSTONES) {
+				// sort entries in ascending order by clock
+				entries.sort((a, b) => a[1] - b[1])
+				// trim off the first bunch
+				const excessQuantity = entries.length - MAX_TOMBSTONES
+				tombstones = Object.fromEntries(entries.slice(excessQuantity + TOMBSTONE_PRUNE_BUFFER_SIZE))
 			}
-			// trim off the first bunch
-			const keysToDelete = entries.slice(0, idx).map(([key]) => key)
-
-			this.tombstoneHistoryStartsAtClock = cullClock + 1
-			this.tombstones.deleteMany(keysToDelete)
-		}
+			return {
+				documents,
+				tombstones,
+			}
+		})
 	}
 
 	private getDocument(id: string) {
-		return this.documents.get(id)
+		return this.state.get().documents[id]
 	}
 
 	private addDocument(id: string, state: R, clock: number): Result<void, Error> {
-		if (this.tombstones.has(id)) {
-			this.tombstones.delete(id)
+		let { documents, tombstones } = this.state.get()
+		if (hasOwnProperty(tombstones, id)) {
+			tombstones = { ...tombstones }
+			delete tombstones[id]
 		}
 		const createResult = DocumentState.createAndValidate(
 			state,
@@ -429,37 +392,32 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 			assertExists(getOwnProperty(this.schema.types, state.typeName))
 		)
 		if (!createResult.ok) return createResult
-		this.documents.set(id, createResult.value)
+		documents = { ...documents, [id]: createResult.value }
+		this.state.set({ documents, tombstones })
 		return Result.ok(undefined)
 	}
 
 	private removeDocument(id: string, clock: number) {
-		this.documents.delete(id)
-		this.tombstones.set(id, clock)
-		if (!this.didSchedulePrune) {
-			this.didSchedulePrune = true
-			setTimeout(this.pruneTombstones, 0)
-		}
+		this.state.update(({ documents, tombstones }) => {
+			documents = { ...documents }
+			delete documents[id]
+			tombstones = { ...tombstones, [id]: clock }
+			return { documents, tombstones }
+		})
 	}
 
 	getSnapshot(): RoomSnapshot {
-		const tombstones = Object.fromEntries(this.tombstones.entries())
-		const documents = []
-		for (const doc of this.documents.values()) {
-			if (this.documentTypes.has(doc.state.typeName)) {
-				documents.push({
-					state: doc.state,
-					lastChangedClock: doc.lastChangedClock,
-				})
-			}
-		}
+		const { documents, tombstones } = this.state.get()
 		return {
 			clock: this.clock,
-			documentClock: this.documentClock,
 			tombstones,
-			tombstoneHistoryStartsAtClock: this.tombstoneHistoryStartsAtClock,
 			schema: this.serializedSchema,
-			documents,
+			documents: Object.values(documents)
+				.filter((d) => this.documentTypes.has(d.state.typeName))
+				.map((doc) => ({
+					state: doc.state,
+					lastChangedClock: doc.lastChangedClock,
+				})),
 		}
 	}
 
@@ -549,7 +507,11 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 		}
 
 		if (presence) {
-			this.documents.delete(session.presenceId!)
+			this.state.update(({ tombstones, documents }) => {
+				documents = { ...documents }
+				delete documents[session.presenceId!]
+				return { documents, tombstones }
+			})
 
 			this.broadcastPatch({
 				diff: { [session.presenceId!]: [RecordOpType.Remove] },
@@ -593,7 +555,7 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 	}
 
 	/**
-	 * Broadcast a patch to all connected clients except the one with the sessionId provided.
+	 * Broadcast a message to all connected clients except the one with the sessionId provided.
 	 *
 	 * @param message - The message to broadcast.
 	 */
@@ -627,16 +589,6 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 			})
 		})
 		return this
-	}
-
-	/**
-	 * Send a custom message to a connected client.
-	 *
-	 * @param sessionId - The id of the session to send the message to.
-	 * @param data - The payload to send.
-	 */
-	sendCustomMessage(sessionId: string, data: any): void {
-		this.sendMessage(sessionId, { type: 'custom', data })
 	}
 
 	/**
@@ -687,18 +639,14 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 		}
 
 		const result: NetworkDiff<R> = {}
-		for (const [id, op] of objectMapEntriesIterable(diff)) {
+		for (const [id, op] of Object.entries(diff)) {
 			if (op[0] === RecordOpType.Remove) {
 				result[id] = op
 				continue
 			}
 
-			const doc = this.getDocument(id)
-			if (!doc) {
-				return Result.err(MigrationFailureReason.TargetVersionTooNew)
-			}
 			const migrationResult = this.schema.migratePersistedRecord(
-				doc.state,
+				this.getDocument(id).state,
 				serializedSchema,
 				'down'
 			)
@@ -808,7 +756,6 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 		if (theirProtocolVersion === 6) {
 			theirProtocolVersion++
 		}
-
 		if (theirProtocolVersion == null || theirProtocolVersion < getTlsyncProtocolVersion()) {
 			this.rejectSession(session.sessionId, TLSyncErrorCloseEventReason.CLIENT_TOO_OLD)
 			return
@@ -833,7 +780,7 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 			? this.serializedSchema
 			: message.schema
 
-		const connect = async (msg: Extract<TLSocketServerSentEvent<R>, { type: 'connect' }>) => {
+		const connect = (msg: TLSocketServerSentEvent<R>) => {
 			this.sessions.set(session.sessionId, {
 				state: RoomSessionState.Connected,
 				sessionId: session.sessionId,
@@ -860,7 +807,7 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 				message.lastServerClock > this.clock
 			) {
 				const diff: NetworkDiff<R> = {}
-				for (const [id, doc] of this.documents.entries()) {
+				for (const [id, doc] of Object.entries(this.state.get().documents)) {
 					if (id !== session.presenceId) {
 						diff[id] = [RecordOpType.Put, doc.state]
 					}
@@ -889,19 +836,30 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 			} else {
 				// calculate the changes since the time the client last saw
 				const diff: NetworkDiff<R> = {}
-				for (const doc of this.documents.values()) {
-					if (doc.lastChangedClock > message.lastServerClock) {
-						diff[doc.state.id] = [RecordOpType.Put, doc.state]
-					} else if (this.presenceType?.isId(doc.state.id) && doc.state.id !== session.presenceId) {
-						diff[doc.state.id] = [RecordOpType.Put, doc.state]
-					}
+				const updatedDocs = Object.values(this.state.get().documents).filter(
+					(doc) => doc.lastChangedClock > message.lastServerClock
+				)
+				const presenceDocs = this.presenceType
+					? Object.values(this.state.get().documents).filter(
+							(doc) =>
+								this.presenceType!.typeName === doc.state.typeName &&
+								doc.state.id !== session.presenceId
+						)
+					: []
+				const deletedDocsIds = Object.entries(this.state.get().tombstones)
+					.filter(([_id, deletedAtClock]) => deletedAtClock > message.lastServerClock)
+					.map(([id]) => id)
+
+				for (const doc of updatedDocs) {
+					diff[doc.state.id] = [RecordOpType.Put, doc.state]
 				}
-				for (const [id, deletedAtClock] of this.tombstones.entries()) {
-					if (deletedAtClock > message.lastServerClock) {
-						diff[id] = [RecordOpType.Remove]
-					}
+				for (const doc of presenceDocs) {
+					diff[doc.state.id] = [RecordOpType.Put, doc.state]
 				}
 
+				for (const docId of deletedDocsIds) {
+					diff[docId] = [RecordOpType.Remove]
+				}
 				const migrated = this.migrateDiffForSession(sessionSchema, diff)
 				if (!migrated.ok) {
 					rollback()
@@ -1001,8 +959,7 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 						return fail(TLSyncErrorCloseEventReason.INVALID_RECORD)
 					}
 					if (diff.value) {
-						this.documents.set(id, diff.value[1])
-						propagateOp(changes, id, [RecordOpType.Patch, diff.value[0]])
+						propagateOp(changes, id, [RecordOpType.Patch, diff.value])
 					}
 				} else {
 					// Otherwise, if we don't already have a document with this id
@@ -1041,8 +998,7 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 						return fail(TLSyncErrorCloseEventReason.INVALID_RECORD)
 					}
 					if (diff.value) {
-						this.documents.set(id, diff.value[1])
-						propagateOp(changes, id, [RecordOpType.Patch, diff.value[0]])
+						propagateOp(changes, id, [RecordOpType.Patch, diff.value])
 					}
 				} else {
 					// need to apply the patch to the downgraded version and then upgrade it
@@ -1063,8 +1019,7 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 						return fail(TLSyncErrorCloseEventReason.INVALID_RECORD)
 					}
 					if (diff.value) {
-						this.documents.set(id, diff.value[1])
-						propagateOp(changes, id, [RecordOpType.Patch, diff.value[0]])
+						propagateOp(changes, id, [RecordOpType.Patch, diff.value])
 					}
 				}
 
@@ -1102,7 +1057,7 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 			}
 			if (message.diff && !session?.isReadonly) {
 				// The push request was for the document scope.
-				for (const [id, op] of objectMapEntriesIterable(message.diff!)) {
+				for (const [id, op] of Object.entries(message.diff!)) {
 					switch (op[0]) {
 						case RecordOpType.Put: {
 							// Try to add the document.
@@ -1132,6 +1087,7 @@ export class TLSyncRoom<R extends UnknownRecord, SessionMeta> {
 							// Delete the document and propagate the delete op
 							this.removeDocument(id, this.clock)
 							// Schedule a pruneTombstones call to happen on the next call stack
+							setTimeout(this.pruneTombstones, 0)
 							propagateOp(docChanges, id, op)
 							break
 						}

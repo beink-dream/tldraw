@@ -4,7 +4,6 @@ import {
 	Rectangle2d,
 	ShapeUtil,
 	TLResizeInfo,
-	getColorValue,
 	getDefaultColorTheme,
 	resizeBox,
 } from 'tldraw'
@@ -66,8 +65,8 @@ export class CardShapeUtil extends ShapeUtil<ICardShape> {
 					alignItems: 'center',
 					justifyContent: 'center',
 					pointerEvents: 'all',
-					backgroundColor: getColorValue(theme, shape.props.color, 'semi'),
-					color: getColorValue(theme, shape.props.color, 'solid'),
+					backgroundColor: theme[shape.props.color].semi,
+					color: theme[shape.props.color].solid,
 				}}
 			>
 				<h2>Clicks: {count}</h2>

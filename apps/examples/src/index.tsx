@@ -15,8 +15,6 @@ import { examples } from './examples'
 import Develop from './misc/develop'
 import EndToEnd from './misc/end-to-end'
 
-const ENABLE_STRICT_MODE = false
-
 // we use secret internal `setDefaultAssetUrls` functions to set these at the
 // top-level so assets don't need to be passed down in every single example.
 const assetUrls = getAssetUrlsByMetaUrl()
@@ -103,18 +101,19 @@ function NoIndex({ children }: { children: React.ReactNode }) {
 document.addEventListener('DOMContentLoaded', () => {
 	const rootElement = document.getElementById('root')!
 	const root = createRoot(rootElement!)
-	const main = (
-		<ErrorBoundary
-			fallback={(error) => <DefaultErrorFallback error={error} />}
-			onError={(error) => console.error(error)}
-		>
-			<HelmetProvider>
-				<RootMeta />
-				<RouterProvider router={router} />
-			</HelmetProvider>
-		</ErrorBoundary>
+	root.render(
+		<StrictMode>
+			<ErrorBoundary
+				fallback={(error) => <DefaultErrorFallback error={error} />}
+				onError={(error) => console.error(error)}
+			>
+				<HelmetProvider>
+					<RootMeta />
+					<RouterProvider router={router} />
+				</HelmetProvider>
+			</ErrorBoundary>
+		</StrictMode>
 	)
-	root.render(ENABLE_STRICT_MODE ? <StrictMode>{main}</StrictMode> : main)
 })
 
 function RootMeta() {

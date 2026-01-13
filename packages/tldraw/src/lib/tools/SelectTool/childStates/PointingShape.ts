@@ -1,5 +1,4 @@
 import { StateNode, TLPointerEventInfo, TLShape } from '@tldraw/editor'
-import { isOverArrowLabel } from '../../../shapes/arrow/arrowLabel'
 import { getTextLabels } from '../../../utils/shapes/shapes'
 
 export class PointingShape extends StateNode {
@@ -211,12 +210,6 @@ export class PointingShape extends StateNode {
 
 	override onPointerMove(info: TLPointerEventInfo) {
 		if (this.editor.inputs.isDragging) {
-			if (isOverArrowLabel(this.editor, this.hitShape)) {
-				// We're moving the label on a shape.
-				this.parent.transition('pointing_arrow_label', { ...info, shape: this.hitShape })
-				return
-			}
-
 			if (this.didCtrlOnEnter) {
 				this.parent.transition('brushing', info)
 			} else {

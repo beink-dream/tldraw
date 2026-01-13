@@ -1,5 +1,4 @@
 import crypto from 'crypto'
-import { vi } from 'vitest'
 import { publishDates } from '../../version'
 import { str2ab } from '../utils/licensing'
 import {
@@ -10,9 +9,8 @@ import {
 	ValidLicenseKeyResult,
 } from './LicenseManager'
 
-vi.mock('../../version', () => {
+jest.mock('../../version', () => {
 	return {
-		version: '3.15.1',
 		publishDates: {
 			major: '2024-06-28T10:56:07.893Z',
 			minor: '2024-07-02T16:49:50.397Z',

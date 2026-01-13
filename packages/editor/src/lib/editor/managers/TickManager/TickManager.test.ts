@@ -1,29 +1,28 @@
-import { Mock, Mocked, vi } from 'vitest'
 import { Vec } from '../../../primitives/Vec'
 import { Editor } from '../../Editor'
 import { TickManager } from './TickManager'
 
 // Mock the Editor class
-vi.mock('../../Editor')
+jest.mock('../../Editor')
 
 // Mock Date.now to control time
-const mockDateNow = vi.fn()
+const mockDateNow = jest.fn()
 Date.now = mockDateNow
 
 // Mock requestAnimationFrame and cancelAnimationFrame
-const mockRequestAnimationFrame = vi.fn()
-const mockCancelAnimationFrame = vi.fn()
+const mockRequestAnimationFrame = jest.fn()
+const mockCancelAnimationFrame = jest.fn()
 global.requestAnimationFrame = mockRequestAnimationFrame
 global.cancelAnimationFrame = mockCancelAnimationFrame
 
 describe('TickManager', () => {
-	let editor: Mocked<Editor>
+	let editor: jest.Mocked<Editor>
 	let tickManager: TickManager
-	let mockEmit: Mock
-	let mockDisposablesAdd: Mock
+	let mockEmit: jest.Mock
+	let mockDisposablesAdd: jest.Mock
 
 	beforeEach(() => {
-		vi.clearAllMocks()
+		jest.clearAllMocks()
 
 		// Reset time
 		mockDateNow.mockReturnValue(1000)
@@ -38,8 +37,8 @@ describe('TickManager', () => {
 
 		mockCancelAnimationFrame.mockImplementation(() => {})
 
-		mockEmit = vi.fn()
-		mockDisposablesAdd = vi.fn()
+		mockEmit = jest.fn()
+		mockDisposablesAdd = jest.fn()
 
 		editor = {
 			emit: mockEmit,
@@ -91,7 +90,7 @@ describe('TickManager', () => {
 		})
 
 		it('should cancel existing RAF before starting new one', () => {
-			const mockCancel = vi.fn()
+			const mockCancel = jest.fn()
 			tickManager.cancelRaf = mockCancel
 
 			tickManager.start()
@@ -144,7 +143,7 @@ describe('TickManager', () => {
 		})
 
 		it('should update pointer velocity', () => {
-			const updatePointerVelocitySpy = vi.spyOn(tickManager as any, 'updatePointerVelocity')
+			const updatePointerVelocitySpy = jest.spyOn(tickManager as any, 'updatePointerVelocity')
 			tickManager.now = 1000
 			mockDateNow.mockReturnValue(1016)
 
@@ -177,7 +176,7 @@ describe('TickManager', () => {
 		})
 
 		it('should cancel RAF if exists', () => {
-			const mockCancel = vi.fn()
+			const mockCancel = jest.fn()
 			tickManager.cancelRaf = mockCancel
 
 			tickManager.dispose()

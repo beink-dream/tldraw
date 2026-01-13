@@ -36,7 +36,6 @@ import { useTranslation } from '../hooks/useTranslation/useTranslation'
 import { TLUiIconType } from '../icon-types'
 import { TLUiOverrideHelpers, useDefaultHelpers } from '../overrides'
 import { useA11y } from './a11y'
-import { useTldrawUiComponents } from './components'
 import { TLUiEventSource, useUiEvents } from './events'
 
 /** @public */
@@ -99,7 +98,6 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 	const _editor = useMaybeEditor()
 	const showCollaborationUi = useShowCollaborationUi()
 	const helpers = useDefaultHelpers()
-	const components = useTldrawUiComponents()
 	const trackEvent = useUiEvents()
 	const a11y = useA11y()
 	const msg = useTranslation()
@@ -178,9 +176,7 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 				kbd: 'cmd+alt+/,ctrl+alt+/',
 				onSelect(source) {
 					trackEvent('open-kbd-shortcuts', { source })
-					helpers.addDialog({
-						component: components.KeyboardShortcutsDialog ?? DefaultKeyboardShortcutsDialog,
-					})
+					helpers.addDialog({ component: DefaultKeyboardShortcutsDialog })
 				},
 			},
 			{
@@ -1041,20 +1037,17 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 				id: 'rotate-cw',
 				label: 'action.rotate-cw',
 				icon: 'rotate-cw',
-				kbd: 'shift+.,shift+alt+.',
 				onSelect(source) {
 					if (!canApplySelectionAction()) return
 					if (mustGoBackToSelectToolFirst()) return
 
-					const isFine = editor.inputs.altKey
-					trackEvent('rotate-cw', { source, fine: isFine })
+					trackEvent('rotate-cw', { source })
 					editor.markHistoryStoppingPoint('rotate-cw')
 					editor.run(() => {
-						const rotation = HALF_PI / (isFine ? 96 : 6)
-						const offset = editor.getSelectionRotation() % rotation
-						const dontUseOffset = approximately(offset, 0) || approximately(offset, rotation)
+						const offset = editor.getSelectionRotation() % (HALF_PI / 2)
+						const dontUseOffset = approximately(offset, 0) || approximately(offset, HALF_PI / 2)
 						const selectedShapeIds = editor.getSelectedShapeIds()
-						editor.rotateShapesBy(selectedShapeIds, rotation - (dontUseOffset ? 0 : offset))
+						editor.rotateShapesBy(selectedShapeIds, HALF_PI / 2 - (dontUseOffset ? 0 : offset))
 						kickoutOccludedShapes(editor, selectedShapeIds)
 					})
 				},
@@ -1063,21 +1056,17 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 				id: 'rotate-ccw',
 				label: 'action.rotate-ccw',
 				icon: 'rotate-ccw',
-				// omg double comma
-				kbd: 'shift+,,shift+alt+,',
 				onSelect(source) {
 					if (!canApplySelectionAction()) return
 					if (mustGoBackToSelectToolFirst()) return
 
-					const isFine = editor.inputs.altKey
-					trackEvent('rotate-ccw', { source, fine: isFine })
+					trackEvent('rotate-ccw', { source })
 					editor.markHistoryStoppingPoint('rotate-ccw')
 					editor.run(() => {
-						const rotation = HALF_PI / (isFine ? 96 : 6)
-						const offset = editor.getSelectionRotation() % rotation
+						const offset = editor.getSelectionRotation() % (HALF_PI / 2)
 						const offsetCloseToZero = approximately(offset, 0)
 						const selectedShapeIds = editor.getSelectedShapeIds()
-						editor.rotateShapesBy(selectedShapeIds, offsetCloseToZero ? -rotation : -offset)
+						editor.rotateShapesBy(selectedShapeIds, offsetCloseToZero ? -(HALF_PI / 2) : -offset)
 						kickoutOccludedShapes(editor, selectedShapeIds)
 					})
 				},
@@ -1266,21 +1255,6 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 					trackEvent('toggle-keyboard-shortcuts', { source })
 					editor.user.updateUserPreferences({
 						areKeyboardShortcutsEnabled: !editor.user.getAreKeyboardShortcutsEnabled(),
-					})
-				},
-				checkbox: true,
-			},
-			{
-				id: 'toggle-ui-labels',
-				label: {
-					default: 'action.toggle-ui-labels',
-					menu: 'action.toggle-ui-labels.menu',
-				},
-				readonlyOk: true,
-				onSelect(source) {
-					trackEvent('toggle-ui-labels', { source })
-					editor.user.updateUserPreferences({
-						showUiLabels: !editor.user.getShowUiLabels(),
 					})
 				},
 				checkbox: true,
@@ -1759,17 +1733,7 @@ export function ActionsProvider({ overrides, children }: ActionsProviderProps) {
 		}
 
 		return actions
-	}, [
-		helpers,
-		_editor,
-		trackEvent,
-		overrides,
-		defaultDocumentName,
-		showCollaborationUi,
-		msg,
-		a11y,
-		components,
-	])
+	}, [helpers, _editor, trackEvent, overrides, defaultDocumentName, showCollaborationUi, msg, a11y])
 
 	return <ActionsContext.Provider value={asActions(actions)}>{children}</ActionsContext.Provider>
 }

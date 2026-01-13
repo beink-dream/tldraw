@@ -1,8 +1,7 @@
 import { createShapeId } from '@tldraw/editor'
-import { vi } from 'vitest'
 import { TestEditor } from '../TestEditor'
 
-vi.useFakeTimers()
+jest.useFakeTimers()
 
 let editor: TestEditor
 
@@ -52,10 +51,10 @@ describe('distributeShapes command', () => {
 	describe('when less than three shapes are selected', () => {
 		it('does nothing', () => {
 			editor.setSelectedShapes([ids.boxA, ids.boxB])
-			const fn = vi.fn()
+			const fn = jest.fn()
 			editor.store.listen(fn)
 			editor.stackShapes(editor.getSelectedShapeIds(), 'horizontal', 0)
-			vi.advanceTimersByTime(1000)
+			jest.advanceTimersByTime(1000)
 			expect(fn).not.toHaveBeenCalled()
 		})
 	})
@@ -66,7 +65,7 @@ describe('distributeShapes command', () => {
 			// @ts-expect-error
 			editor.options.adjacentShapeMargin = 1
 			editor.stackShapes(editor.getSelectedShapeIds(), 'horizontal')
-			vi.advanceTimersByTime(1000)
+			jest.advanceTimersByTime(1000)
 			// 200 distance gap between c and d
 			editor.expectShapeToMatch({
 				id: ids.boxA,
@@ -93,7 +92,7 @@ describe('distributeShapes command', () => {
 		it('stacks the shapes based on a given value', () => {
 			editor.setSelectedShapes([ids.boxA, ids.boxB, ids.boxC, ids.boxD])
 			editor.stackShapes(editor.getSelectedShapeIds(), 'horizontal', 10)
-			vi.advanceTimersByTime(1000)
+			jest.advanceTimersByTime(1000)
 			// 200 distance gap between c and d
 			editor.expectShapeToMatch({
 				id: ids.boxA,
@@ -120,7 +119,7 @@ describe('distributeShapes command', () => {
 		it('stacks the shapes based on the most common gap', () => {
 			editor.setSelectedShapes([ids.boxA, ids.boxB, ids.boxC, ids.boxD])
 			editor.stackShapes(editor.getSelectedShapeIds(), 'horizontal', 0)
-			vi.advanceTimersByTime(1000)
+			jest.advanceTimersByTime(1000)
 			// 200 distance gap between c and d
 			editor.expectShapeToMatch({
 				id: ids.boxA,
@@ -148,7 +147,7 @@ describe('distributeShapes command', () => {
 			editor.updateShapes([{ id: ids.boxD, type: 'geo', x: 540, y: 700 }])
 			editor.setSelectedShapes([ids.boxA, ids.boxB, ids.boxC, ids.boxD])
 			editor.stackShapes(editor.getSelectedShapeIds(), 'horizontal', 0)
-			vi.advanceTimersByTime(1000)
+			jest.advanceTimersByTime(1000)
 			editor.expectShapeToMatch({
 				id: ids.boxA,
 				x: 0,
@@ -176,7 +175,7 @@ describe('distributeShapes command', () => {
 		it('stacks the shapes based on a given value', () => {
 			editor.setSelectedShapes([ids.boxA, ids.boxB, ids.boxC, ids.boxD])
 			editor.stackShapes(editor.getSelectedShapeIds(), 'vertical', 10)
-			vi.advanceTimersByTime(1000)
+			jest.advanceTimersByTime(1000)
 			// 200 distance gap between c and d
 			editor.expectShapeToMatch({
 				id: ids.boxA,
@@ -203,7 +202,7 @@ describe('distributeShapes command', () => {
 		it('stacks the shapes based on the most common gap', () => {
 			editor.setSelectedShapes([ids.boxA, ids.boxB, ids.boxC, ids.boxD])
 			editor.stackShapes(editor.getSelectedShapeIds(), 'vertical', 0)
-			vi.advanceTimersByTime(1000)
+			jest.advanceTimersByTime(1000)
 			// 200 distance gap between c and d
 			editor.expectShapeToMatch({
 				id: ids.boxA,
@@ -231,7 +230,7 @@ describe('distributeShapes command', () => {
 			editor.updateShapes([{ id: ids.boxD, type: 'geo', x: 700, y: 540 }])
 			editor.setSelectedShapes([ids.boxA, ids.boxB, ids.boxC, ids.boxD])
 			editor.stackShapes(editor.getSelectedShapeIds(), 'vertical', 0)
-			vi.advanceTimersByTime(1000)
+			jest.advanceTimersByTime(1000)
 			editor.expectShapeToMatch({
 				id: ids.boxA,
 				x: 0,

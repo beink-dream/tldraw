@@ -15,13 +15,12 @@ import {
 	rotateSelectionHandle,
 	toRichText,
 } from '@tldraw/editor'
-import { vi } from 'vitest'
 import { NoteShapeUtil } from '../lib/shapes/note/NoteShapeUtil'
 import { TestEditor } from './TestEditor'
 import { getSnapLines } from './getSnapLines'
 import { roundedBox } from './roundedBox'
 
-vi.useFakeTimers()
+jest.useFakeTimers()
 
 const ORDERED_ROTATE_CORNERS: TLSelectionHandle[] = [
 	'top_left_rotate',
@@ -545,7 +544,7 @@ describe('Reisizing a selection of multiple shapes', () => {
 		// └──────────────────O
 
 		editor.pointerMove(15, 8, { altKey: false, shiftKey: true })
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 
 		expect(roundedBox(editor.getSelectionPageBounds()!)).toMatchObject({ w: 15, h: 15 })
 		expect(roundedPageBounds(ids.boxA)).toMatchObject({ x: 0, y: 0, w: 5, h: 5 })
@@ -594,7 +593,7 @@ describe('Reisizing a selection of multiple shapes', () => {
 		editor.pointerDown(30, 20, { target: 'selection', handle: 'top_left_rotate' })
 		editor.pointerMove(20, 20, { shiftKey: true })
 		editor.pointerUp(20, 20, { shiftKey: false })
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 
 		expect(editor.getShape(ids.boxB)!.rotation).toBeCloseTo(canonicalizeRotation(-PI / 2))
 
@@ -741,7 +740,7 @@ describe('Reisizing a selection of multiple shapes', () => {
 		// └──────────────────O
 
 		editor.pointerMove(15, 8, { altKey: false, shiftKey: true })
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 
 		expect(roundedBox(editor.getSelectionPageBounds()!)).toMatchObject({ w: 15, h: 15 })
 		expect(roundedPageBounds(ids.boxA)).toMatchObject({ x: 0, y: 0, w: 5, h: 5 })
@@ -2365,7 +2364,7 @@ describe('snapping while resizing a shape that has been rotated by multiples of 
 			.select(ids.boxX)
 			.pointerDown(100, 70, { target: 'selection', handle: 'top' })
 			.pointerMove(121, 70, { ctrlKey: true, shiftKey: false })
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 
 		expect(editor.getShapePageBounds(ids.boxX)!).toMatchObject({
 			x: 40,
@@ -2433,7 +2432,7 @@ describe('snapping while resizing a shape that has been rotated by multiples of 
 			.select(ids.boxX)
 			.pointerDown(70, 40, { target: 'selection', handle: 'bottom' })
 			.pointerMove(70, 18, { ctrlKey: true, shiftKey: false })
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 
 		expect(editor.getShapePageBounds(ids.boxX)!.x).toBeCloseTo(40)
 		expect(editor.getShapePageBounds(ids.boxX)!.y).toBeCloseTo(20)
@@ -2565,7 +2564,7 @@ describe('snapping while resizing a shape that has been rotated by multiples of 
 			.select(ids.boxX)
 			.pointerDown(100, 70, { target: 'selection', handle: 'right' })
 			.pointerMove(121, 70, { ctrlKey: true, shiftKey: false })
-		vi.advanceTimersByTime(200)
+		jest.advanceTimersByTime(200)
 
 		expect(editor.getShapePageBounds(ids.boxX)!.x).toBeCloseTo(40)
 		expect(editor.getShapePageBounds(ids.boxX)!.y).toBeCloseTo(40)
@@ -3825,36 +3824,36 @@ describe('shapes that have do not resize', () => {
 //   })
 // })
 
-// describe('bugs', () => {
-// it('resizing a zero width shape', () => {
-//	// Draw shapes can no longer have zero width / height
-// 	const shapeId = createShapeId()
-// 	app
-// 		.createShapes([
-// 			{
-// 				id: shapeId,
-// 				type: 'draw',
-// 				x: 0,
-// 				y: 0,
-// 				props: {
-// 					segments: [
-// 						{
-// 							type: 'straight',
-// 							points: [
-// 								{ x: 0, y: 0 },
-// 								{ x: 0, y: 100 },
-// 							],
-// 						},
-// 					],
-// 				},
-// 			},
-// 		])
-// 		.select(shapeId)
-// 	expect(editor.selectionRotatedBounds!.width).toBe(0)
-// 	editor.pointerDown(0, 100, { target: 'selection', handle: 'bottom_right' }).pointerMove(10, 110)
-// 	expect(editor.selectionRotatedBounds!.width).toBe(0)
-// })
-// })
+describe('bugs', () => {
+	// it('resizing a zero width shape', () => {
+	//	// Draw shapes can no longer have zero width / height
+	// 	const shapeId = createShapeId()
+	// 	app
+	// 		.createShapes([
+	// 			{
+	// 				id: shapeId,
+	// 				type: 'draw',
+	// 				x: 0,
+	// 				y: 0,
+	// 				props: {
+	// 					segments: [
+	// 						{
+	// 							type: 'straight',
+	// 							points: [
+	// 								{ x: 0, y: 0 },
+	// 								{ x: 0, y: 100 },
+	// 							],
+	// 						},
+	// 					],
+	// 				},
+	// 			},
+	// 		])
+	// 		.select(shapeId)
+	// 	expect(editor.selectionRotatedBounds!.width).toBe(0)
+	// 	editor.pointerDown(0, 100, { target: 'selection', handle: 'bottom_right' }).pointerMove(10, 110)
+	// 	expect(editor.selectionRotatedBounds!.width).toBe(0)
+	// })
+})
 
 it('uses the cross cursor when create resizing', () => {
 	editor.setCurrentTool('geo')
@@ -3943,7 +3942,7 @@ describe('When resizing near the edges of the screen', () => {
 				handle: 'top_left',
 			})
 			.pointerMove(-1, -1) // into the edge scrolling distance
-		vi.advanceTimersByTime(1000)
+		jest.advanceTimersByTime(1000)
 		const after = editor.getShape<TLGeoShape>(ids.boxA)!
 		expect(after.x).toBeLessThan(before.x)
 		expect(after.y).toBeLessThan(before.y)

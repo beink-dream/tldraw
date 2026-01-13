@@ -11,7 +11,6 @@ import {
 	createBindingId,
 	createShapeId,
 } from '@tldraw/editor'
-import { vi } from 'vitest'
 import { TestEditor } from './TestEditor'
 import { TL } from './test-jsx'
 
@@ -24,19 +23,37 @@ const ids = {
 	box4: createShapeId('box4'),
 }
 
-const mockOnOperationComplete = vi.fn()
-const mockOnBeforeDelete = vi.fn()
-const mockOnAfterDelete = vi.fn()
-const mockOnBeforeFromShapeDelete = vi.fn()
-const mockOnBeforeToShapeDelete = vi.fn()
-const mockOnBeforeFromShapeIsolate = vi.fn()
-const mockOnBeforeToShapeIsolate = vi.fn()
-const mockOnBeforeCreate = vi.fn()
-const mockOnAfterCreate = vi.fn()
-const mockOnBeforeChange = vi.fn()
-const mockOnAfterChange = vi.fn()
-const mockOnAfterChangeFromShape = vi.fn()
-const mockOnAfterChangeToShape = vi.fn()
+const mockOnOperationComplete = jest.fn() as jest.Mock<void, []>
+const mockOnBeforeDelete = jest.fn() as jest.Mock<void, [BindingOnDeleteOptions<TLUnknownBinding>]>
+const mockOnAfterDelete = jest.fn() as jest.Mock<void, [BindingOnDeleteOptions<TLUnknownBinding>]>
+const mockOnBeforeFromShapeDelete = jest.fn() as jest.Mock<
+	void,
+	[BindingOnShapeDeleteOptions<TLUnknownBinding>]
+>
+const mockOnBeforeToShapeDelete = jest.fn() as jest.Mock<
+	void,
+	[BindingOnShapeDeleteOptions<TLUnknownBinding>]
+>
+const mockOnBeforeFromShapeIsolate = jest.fn() as jest.Mock<
+	void,
+	[BindingOnShapeIsolateOptions<TLUnknownBinding>]
+>
+const mockOnBeforeToShapeIsolate = jest.fn() as jest.Mock<
+	void,
+	[BindingOnShapeIsolateOptions<TLUnknownBinding>]
+>
+const mockOnBeforeCreate = jest.fn() as jest.Mock<void, [BindingOnCreateOptions<TLUnknownBinding>]>
+const mockOnAfterCreate = jest.fn() as jest.Mock<void, [BindingOnCreateOptions<TLUnknownBinding>]>
+const mockOnBeforeChange = jest.fn() as jest.Mock<void, [BindingOnChangeOptions<TLUnknownBinding>]>
+const mockOnAfterChange = jest.fn() as jest.Mock<void, [BindingOnChangeOptions<TLUnknownBinding>]>
+const mockOnAfterChangeFromShape = jest.fn() as jest.Mock<
+	void,
+	[BindingOnShapeChangeOptions<TLUnknownBinding>]
+>
+const mockOnAfterChangeToShape = jest.fn() as jest.Mock<
+	void,
+	[BindingOnShapeChangeOptions<TLUnknownBinding>]
+>
 
 const calls: string[] = []
 
@@ -256,11 +273,9 @@ test('copying the to shape on its own does trigger the unbind operation', () => 
 })
 
 test('cascading deletes in beforeFromShapeDelete are handled correctly', () => {
-	mockOnBeforeFromShapeDelete.mockImplementation(
-		(options: BindingOnShapeDeleteOptions<TLUnknownBinding>) => {
-			editor.deleteShape(options.binding.toId)
-		}
-	)
+	mockOnBeforeFromShapeDelete.mockImplementation((options) => {
+		editor.deleteShape(options.binding.toId)
+	})
 
 	bindShapes(ids.box1, ids.box2)
 	bindShapes(ids.box2, ids.box3)
@@ -301,11 +316,9 @@ test('cascading deletes in beforeFromShapeDelete are handled correctly', () => {
 })
 
 test('cascading deletes in beforeToShapeDelete are handled correctly', () => {
-	mockOnBeforeToShapeDelete.mockImplementation(
-		(options: BindingOnShapeDeleteOptions<TLUnknownBinding>) => {
-			editor.deleteShape(options.binding.fromId)
-		}
-	)
+	mockOnBeforeToShapeDelete.mockImplementation((options) => {
+		editor.deleteShape(options.binding.fromId)
+	})
 
 	bindShapes(ids.box1, ids.box2)
 	bindShapes(ids.box2, ids.box3)

@@ -27,8 +27,6 @@ export interface TldrawOptions {
 	readonly multiClickDurationMs: number
 	readonly coarseDragDistanceSquared: number
 	readonly dragDistanceSquared: number
-	readonly uiDragDistanceSquared: number
-	readonly uiCoarseDragDistanceSquared: number
 	readonly defaultSvgPadding: number
 	readonly cameraSlideFriction: number
 	readonly gridSteps: readonly {
@@ -55,7 +53,6 @@ export interface TldrawOptions {
 	readonly flattenImageBoundsPadding: number
 	readonly laserDelayMs: number
 	readonly maxExportDelayMs: number
-	readonly tooltipDelayMs: number
 	/**
 	 * How long should previews created by {@link Editor.createTemporaryAssetPreview} last before
 	 * they expire? Defaults to 3 minutes.
@@ -100,10 +97,6 @@ export const defaultTldrawOptions = {
 	multiClickDurationMs: 200,
 	coarseDragDistanceSquared: 36, // 6 squared
 	dragDistanceSquared: 16, // 4 squared
-	uiDragDistanceSquared: 16, // 4 squared
-	// it's really easy to accidentally drag from the toolbar on mobile, so we use a much larger
-	// threshold than usual here to try and prevent accidental drags.
-	uiCoarseDragDistanceSquared: 625, // 25 squared
 	defaultSvgPadding: 32,
 	cameraSlideFriction: 0.09,
 	gridSteps: [
@@ -131,7 +124,6 @@ export const defaultTldrawOptions = {
 	flattenImageBoundsPadding: 16,
 	laserDelayMs: 1200,
 	maxExportDelayMs: 5000,
-	tooltipDelayMs: 700,
 	temporaryAssetPreviewLifetimeMs: 180000,
 	actionShortcutsLocation: 'swap',
 	createTextOnCanvasDoubleClick: true,
