@@ -703,32 +703,17 @@ export {
 } from './lib/utils/tldr/file'
 
 // Patches
-import { SvgTextLabel } from './lib/shapes/shared/SvgTextLabel';
+export { SvgTextLabel } from './lib/shapes/shared/SvgTextLabel';
 
 //LineTool
-import { Pointing as LineToolPointing } from "./lib/shapes/line/toolStates/Pointing";
-import { Idle as LineToolIdle } from "./lib/shapes/line/toolStates/Idle";
-import { getStrokeOutlinePoints } from "./lib/shapes/shared/freehand/getStrokeOutlinePoints";
-
-import type { StrokePoint, StrokeOptions} from './lib/shapes/shared/freehand/types'
+export { Pointing as LineToolPointing } from "./lib/shapes/line/toolStates/Pointing";
+export { Idle as LineToolIdle } from "./lib/shapes/line/toolStates/Idle";
+export { getStrokeOutlinePoints } from "./lib/shapes/shared/freehand/getStrokeOutlinePoints";
 
 ///EraserTool
-import { flattenShapesToImages } from "./lib/ui/hooks/useFlatten";
-
-export {
-	SvgTextLabel,
-	LineToolPointing,
-	LineToolIdle,
-	getStrokeOutlinePoints,
-	flattenShapesToImages,
-}
+export { flattenShapesToImages } from "./lib/ui/hooks/useFlatten";
 
 export { getGeoShapePath } from './lib/shapes/geo/getGeoShapePath';
-
-export type {
-	StrokePoint,
-	StrokeOptions
-}
 
 registerTldrawLibraryVersion(
 	(globalThis as any).TLDRAW_LIBRARY_NAME,

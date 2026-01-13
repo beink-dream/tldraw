@@ -1446,6 +1446,9 @@ export function fitFrameToContent(editor: Editor, id: TLShapeId, opts?: {
 export function FitFrameToContentMenuItem(): JSX_2.Element | null;
 
 // @public (undocumented)
+export function flattenShapesToImages(editor: Editor, shapeIds: TLShapeId[], flattenImageBoundsExpand?: number): Promise<TLShapeId[] | undefined>;
+
+// @public (undocumented)
 export const FONT_FAMILIES: Record<TLDefaultFontStyle, string>;
 
 // @public (undocumented)
@@ -1719,10 +1722,16 @@ export function getDefaultCrop(): TLShapeCrop;
 export function getEmbedInfo(definitions: readonly TLEmbedDefinition[], inputUrl: string): TLEmbedResult;
 
 // @public (undocumented)
+export function getGeoShapePath(shape: TLGeoShape): PathBuilder;
+
+// @public (undocumented)
 export function getHitShapeOnCanvasPointerDown(editor: Editor, hitLabels?: boolean): TLShape | undefined;
 
 // @public (undocumented)
 export function getMediaAssetInfoPartial(file: File, assetId: TLAssetId, isImageType: boolean, isVideoType: boolean, maxImageDimension?: number): Promise<TLImageAsset | TLVideoAsset>;
+
+// @public
+export function getStrokeOutlinePoints(strokePoints: StrokePoint[], options?: StrokeOptions): Vec[];
 
 // @public
 export function getStrokePoints(rawInputPoints: VecLike[], options?: StrokeOptions): StrokePoint[];
@@ -1876,6 +1885,9 @@ export class ImageShapeUtil extends BaseBoxShapeUtil<TLImageShape> {
     static type: "image";
 }
 
+// @public
+export function isEmptyRichText(richText: TLRichText): boolean;
+
 // @public (undocumented)
 export const KeyboardShiftEnterTweakExtension: Extension<any, any>;
 
@@ -2026,6 +2038,48 @@ export class LineShapeUtil extends ShapeUtil<TLLineShape> {
 
 // @public (undocumented)
 export function LineToolbarItem(): JSX_2.Element;
+
+// @public (undocumented)
+export class LineToolIdle extends StateNode {
+    // (undocumented)
+    static id: string;
+    // (undocumented)
+    onCancel(): void;
+    // (undocumented)
+    onEnter(info: {
+        shapeId: TLShapeId;
+    }): void;
+    // (undocumented)
+    onPointerDown(): void;
+}
+
+// @public (undocumented)
+export class LineToolPointing extends StateNode {
+    // (undocumented)
+    cancel(): void;
+    // (undocumented)
+    complete(): void;
+    // (undocumented)
+    static id: string;
+    // (undocumented)
+    markId: string | undefined;
+    // (undocumented)
+    onCancel(): void;
+    // (undocumented)
+    onComplete(): void;
+    // (undocumented)
+    onEnter(info: {
+        shapeId?: TLShapeId;
+    }): void;
+    // (undocumented)
+    onInterrupt(): void;
+    // (undocumented)
+    onPointerMove(): void;
+    // (undocumented)
+    onPointerUp(): void;
+    // (undocumented)
+    shape: TLLineShape;
+}
 
 // @internal (undocumented)
 export interface LineToPathBuilderCommand extends PathBuilderCommandBase {
@@ -2690,6 +2744,21 @@ export type StyleValuesForUi<T> = readonly {
     readonly icon: string | TLUiIconJsx;
     readonly value: T;
 }[];
+
+// @public (undocumented)
+export function SvgTextLabel({ fontSize, font, align, verticalAlign, text, labelColor, bounds, padding, stroke, showTextOutline, }: {
+    align: TLDefaultHorizontalAlignStyle;
+    bounds: Box;
+    font: TLDefaultFontStyle;
+    fontSize: number;
+    labelColor: string;
+    padding?: number;
+    showTextOutline?: boolean;
+    stroke?: boolean;
+    text: string;
+    verticalAlign: TLDefaultVerticalAlignStyle;
+    wrap?: boolean;
+}): JSX_2.Element;
 
 // @public (undocumented)
 export const TEXT_PROPS: {
