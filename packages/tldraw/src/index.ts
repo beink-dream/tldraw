@@ -682,9 +682,9 @@ export { Idle as GeoIdle } from "./lib/shapes/geo/toolStates/Idle";
 export {
 	getStrokeOutlinePoints,
 	getStrokeOutlineTracks,
-} from './lib/shapes/shared/freehand/getStrokeOutlinePoints'
-export { getStrokePoints  } from './lib/shapes/shared/freehand/getStrokePoints'
-export { getSvgPathFromStrokePoints  } from './lib/shapes/shared/freehand/svg'
+} from './lib/shapes/shared/freehand/getStrokeOutlinePoints';
+export { getStrokePoints  } from './lib/shapes/shared/freehand/getStrokePoints';
+export { getSvgPathFromStrokePoints  } from './lib/shapes/shared/freehand/svg';
 
 ///EraserTool
 export { flattenShapesToImages } from "./lib/ui/hooks/useFlatten";
@@ -693,9 +693,21 @@ export { getGeoShapePath } from './lib/shapes/geo/getGeoShapePath';
 
 export { setStrokePointRadii } from './lib/shapes/shared/freehand/setStrokePointRadii';
 export { TextHelpers } from './lib/shapes/shared/TextHelpers';
-export { getFreehandOptions, getPointsFromSegments, getDrawShapeStrokeDashArray } from './lib/shapes/draw/getPath'
+export { getFreehandOptions, getPointsFromSegments, getDrawShapeStrokeDashArray } from './lib/shapes/draw/getPath';
 
-export { HyperlinkButton } from './lib/shapes/shared/HyperlinkButton'
+export { HyperlinkButton } from './lib/shapes/shared/HyperlinkButton';
+export {
+	MAX_ZOOM,
+	getCroppedImageDataForAspectRatio,
+	getCroppedImageDataWhenZooming,
+} from './lib/shapes/shared/crop';
+export type {
+	CropChange
+} from './lib/shapes/shared/crop';
+
+export type { AltTextEditorProps } from './lib/ui/components/Toolbar/AltTextEditor'
+export { AltTextEditor } from './lib/ui/components/Toolbar/AltTextEditor'
+
 
 registerTldrawLibraryVersion(
 	(globalThis as any).TLDRAW_LIBRARY_NAME,

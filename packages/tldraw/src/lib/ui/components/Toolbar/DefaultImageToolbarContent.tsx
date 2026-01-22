@@ -40,6 +40,7 @@ export interface DefaultImageToolbarContentProps {
 	onEditAltTextStart(): void
 	onManipulatingStart(): void
 	onManipulatingEnd(): void
+	hideReplaceButton?: boolean
 }
 
 /** @public @react */
@@ -49,6 +50,7 @@ export const DefaultImageToolbarContent = track(function DefaultImageToolbarCont
 	onEditAltTextStart,
 	onManipulatingStart,
 	onManipulatingEnd,
+	hideReplaceButton = false
 }: DefaultImageToolbarContentProps) {
 	const editor = useEditor()
 	const trackEvent = useUiEvents()
@@ -282,7 +284,7 @@ export const DefaultImageToolbarContent = track(function DefaultImageToolbarCont
 
 	return (
 		<>
-			{!isReadonly && (
+			{!isReadonly && !hideReplaceButton && (
 				<TldrawUiButton type="icon" title={msg('tool.replace-media')} onClick={handleImageReplace}>
 					<TldrawUiButtonIcon small icon="tool-media" />
 				</TldrawUiButton>

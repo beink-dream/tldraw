@@ -10,12 +10,14 @@ import { TldrawUiButtonIcon } from '../primitives/Button/TldrawUiButtonIcon'
 export interface DefaultVideoToolbarContentProps {
 	videoShapeId: TLVideoShape['id']
 	onEditAltTextStart(): void
+	hideReplaceButton?: boolean
 }
 
 /** @public @react */
 export const DefaultVideoToolbarContent = track(function DefaultVideoToolbarContent({
 	videoShapeId,
 	onEditAltTextStart,
+	hideReplaceButton = false,
 }: DefaultVideoToolbarContentProps) {
 	const editor = useEditor()
 	const trackEvent = useUiEvents()
@@ -43,7 +45,7 @@ export const DefaultVideoToolbarContent = track(function DefaultVideoToolbarCont
 
 	return (
 		<>
-			{!isReadonly && (
+			{!isReadonly && !hideReplaceButton && (
 				<TldrawUiButton type="icon" title={msg('tool.replace-media')} onClick={handleVideoReplace}>
 					<TldrawUiButtonIcon small icon="tool-media" />
 				</TldrawUiButton>

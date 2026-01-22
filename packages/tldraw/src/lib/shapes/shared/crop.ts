@@ -368,7 +368,8 @@ export function getCropBox<T extends ShapeWithCrop>(
 	}
 }
 
-interface CropChange {
+/** @public */
+export interface CropChange {
 	crop: {
 		topLeft: { x: number; y: number }
 		bottomRight: { x: number; y: number }
@@ -427,11 +428,12 @@ function calculateCropChange(
 	}
 }
 
-/** @internal */
+/** @public */
 export const MAX_ZOOM = 3
 
 /**
  * Calculate new crop dimensions and position when zooming
+ * @public
  */
 export function getCroppedImageDataWhenZooming(
 	zoom: number,
@@ -559,6 +561,7 @@ export function getCroppedImageDataForReplacedImage(
 
 /**
  * Calculate new crop dimensions and position when changing aspect ratio
+ * @public
  */
 export function getCroppedImageDataForAspectRatio(
 	aspectRatioOption: ASPECT_RATIO_OPTION,

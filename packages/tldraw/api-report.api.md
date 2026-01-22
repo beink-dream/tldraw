@@ -173,6 +173,19 @@ export function AlignMenuItems(): JSX_2.Element;
 export const allDefaultFontFaces: TLFontFace[];
 
 // @public (undocumented)
+export function AltTextEditor({ shapeId, onClose, source }: AltTextEditorProps): JSX_2.Element;
+
+// @public (undocumented)
+export interface AltTextEditorProps {
+    // (undocumented)
+    onClose(): void;
+    // (undocumented)
+    shapeId: TLShapeId;
+    // (undocumented)
+    source: 'image-toolbar' | 'video-toolbar';
+}
+
+// @public (undocumented)
 export function ArrangeMenuSubmenu(): JSX_2.Element | null;
 
 // @public (undocumented)
@@ -539,6 +552,30 @@ export interface CropBoxOptions {
     minWidth?: number;
 }
 
+// @public (undocumented)
+export interface CropChange {
+    // (undocumented)
+    crop: {
+        bottomRight: {
+            x: number;
+            y: number;
+        };
+        isCircle?: boolean;
+        topLeft: {
+            x: number;
+            y: number;
+        };
+    };
+    // (undocumented)
+    h: number;
+    // (undocumented)
+    w: number;
+    // (undocumented)
+    x: number;
+    // (undocumented)
+    y: number;
+}
+
 // @internal (undocumented)
 export interface CubicBezierToPathBuilderCommand extends PathBuilderCommandBase {
     // (undocumented)
@@ -899,6 +936,8 @@ export const DefaultImageToolbarContent: NamedExoticComponent<DefaultImageToolba
 // @public (undocumented)
 export interface DefaultImageToolbarContentProps {
     // (undocumented)
+    hideReplaceButton?: boolean;
+    // (undocumented)
     imageShapeId: TLImageShape['id'];
     // (undocumented)
     isManipulating: boolean;
@@ -998,6 +1037,8 @@ export const DefaultVideoToolbarContent: NamedExoticComponent<DefaultVideoToolba
 
 // @public (undocumented)
 export interface DefaultVideoToolbarContentProps {
+    // (undocumented)
+    hideReplaceButton?: boolean;
     // (undocumented)
     onEditAltTextStart(): void;
     // (undocumented)
@@ -1705,6 +1746,12 @@ export function getCropBox<T extends ShapeWithCrop>(shape: T, info: TLCropInfo<T
     y: number;
 } | undefined;
 
+// @public
+export function getCroppedImageDataForAspectRatio(aspectRatioOption: ASPECT_RATIO_OPTION, imageShape: TLImageShape): CropChange;
+
+// @public
+export function getCroppedImageDataWhenZooming(zoom: number, imageShape: TLImageShape, maxZoom?: number): CropChange;
+
 // @public (undocumented)
 export function getDefaultCrop(): TLShapeCrop;
 
@@ -2095,6 +2142,9 @@ export interface LineToPathBuilderCommand extends PathBuilderCommandBase {
     // (undocumented)
     type: 'line';
 }
+
+// @public (undocumented)
+export const MAX_ZOOM = 3;
 
 // @public (undocumented)
 export function MiscMenuGroup(): JSX_2.Element;
