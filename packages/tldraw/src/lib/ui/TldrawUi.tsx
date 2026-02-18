@@ -112,6 +112,7 @@ const TldrawUiContent = React.memo(function TldrawUI() {
 		RichTextToolbar,
 		ImageToolbar,
 		VideoToolbar,
+		customToolbars,
 		Toasts,
 		Dialogs,
 		A11y,
@@ -211,6 +212,9 @@ const TldrawUiContent = React.memo(function TldrawUI() {
 			{RichTextToolbar && <RichTextToolbar />}
 			{ImageToolbar && <ImageToolbar />}
 			{VideoToolbar && <VideoToolbar />}
+			{customToolbars?.map((Toolbar, index) => (
+				<Toolbar key={Toolbar.displayName || Toolbar.name || index} />
+			))}
 			{Toasts && <Toasts />}
 			{Dialogs && <Dialogs />}
 			<FollowingIndicator />

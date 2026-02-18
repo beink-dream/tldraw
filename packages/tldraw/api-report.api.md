@@ -3535,6 +3535,7 @@ export interface TLUiComponents {
     ContextMenu?: ComponentType<TLUiContextMenuProps> | null;
     // (undocumented)
     CursorChatBubble?: ComponentType | null;
+    customToolbars?: ComponentType[];
     // (undocumented)
     DebugMenu?: ComponentType | null;
     // (undocumented)

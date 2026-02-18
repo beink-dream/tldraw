@@ -72,6 +72,8 @@ export interface TLUiComponents {
 	Dialogs?: ComponentType | null
 	Toasts?: ComponentType | null
 	A11y?: ComponentType | null
+	/** Array of custom toolbar components to render after built-in toolbars */
+	customToolbars?: ComponentType[]
 }
 
 const TldrawUiComponentsContext = createContext<TLUiComponents | null>(null)
