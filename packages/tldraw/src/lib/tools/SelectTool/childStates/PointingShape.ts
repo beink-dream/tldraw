@@ -20,10 +20,23 @@ export class PointingShape extends StateNode {
 		} = this.editor
 		const { shiftKey, altKey, accelKey } = info
 
+		// Defensive check: ensure the shape still exists in the store
+		if (!info.shape || !this.editor.getShape(info.shape.id)) {
+			this.parent.transition('idle', info)
+			return
+		}
+
 		this.hitShape = info.shape
 		this.isDoubleClick = false
 		this.didCtrlOnEnter = accelKey
 		const outermostSelectingShape = this.editor.getOutermostSelectableShape(info.shape)
+
+		// Defensive check: ensure we got a valid outermost shape
+		if (!outermostSelectingShape) {
+			this.parent.transition('idle', info)
+			return
+		}
+
 		const selectedAncestor = this.editor.findShapeAncestor(outermostSelectingShape, (parent) =>
 			selectedShapeIds.includes(parent.id)
 		)
